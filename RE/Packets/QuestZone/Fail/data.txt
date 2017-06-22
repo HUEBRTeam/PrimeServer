@@ -1,0 +1,10 @@
+23 Mission Fail
+	CPlayEngine::Run(): Loaded D/503/A.
+	Elapsed Time: 4.000000
+	P1 - ID:ef2000 LV:5 TYPE:0 FLAG:0 GRADE:6 SCORE:51700 RSCORE:0 EXP:3 PP:12 KCAL:0.000000
+	Writting packet #22 in packets/sodium_22_out_pkt.bin
+	Got Score Packet!
+	SongID: ef2000
+		Score: 51700
+		RealScore: 0
+		EXP: 3

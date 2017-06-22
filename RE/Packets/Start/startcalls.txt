@@ -1,0 +1,7 @@
+Call to http://www2.piugame.com/piu.module/piu.get_ip_to_country.php
+	Response: {"country_data":{"ip":"XXX.XXX.XXX.XXX","country_name":"BRAZIL","country_no":"24","iso":"BR"}}
+	
+http://www2.piugame.com/piu.module/piu.get_rank_by_machine.php?search_rank_type=%d&search_country=%d
+
+
+Calls http://www2.piugame.com/piu.module/piu.get_rank_by_machine.php?search_rank_type=1 to search_rank_type=5

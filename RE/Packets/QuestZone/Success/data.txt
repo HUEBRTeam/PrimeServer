@@ -1,0 +1,12 @@
+25 Mission Success:
+	P1 - ID:ef2001 LV:7 TYPE:0 FLAG:1 GRADE:2 SCORE:745200 RSCORE:0 EXP:6 PP:373 KCAL:0.000000
+	Writting packet #24 in packets/sodium_24_out_pkt.bin
+	Got Score Packet!
+	SongID: ef2001
+		Score: 745200
+		RealScore: 0
+		EXP: 6
+	Writting raw packet #25 in packets/raw_25_out_115.68.108.183_60000.bin
+	Writting packet #26 in packets/sodium_26_out_pkt.bin
+	Writting raw packet #27 in packets/raw_27_out_115.68.108.183_60000.bin
+	Writting packet #28 in packets/sodium_28_in_pkt.bin
