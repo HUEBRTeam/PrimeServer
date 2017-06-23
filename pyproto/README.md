@@ -7,11 +7,7 @@
 Pump it Up: Prime - Server
 
 *   `client.py`   (Prime Profile Downloader Client)
-*   `packets`     (Symbolick link to /PrimeData/Network/packets)
 *   `prime.py`    (Prime Library for Network Data)
 *   `profiles`    (Prime Test Profiles)
-*   `proxytest`   (Just an proxy server to test the stuff)
 *   `server.py`   (Prime Server)
-*   `sprivk`      (Copy of prime Private Key)
-*   `spublick`    (Copy of prime Public Key)
 *   `tests`       (Unit tests for Prime Library)
