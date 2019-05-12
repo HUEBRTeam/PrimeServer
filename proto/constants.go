@@ -1,5 +1,7 @@
 package proto
 
+import "fmt"
+
 const (
 	PacketHead  = 0x00000001
 	PacketTrail = 0x0FFFFFFF
@@ -23,3 +25,29 @@ const (
 	PacketBye                = 0x01000010
 	PacketMachineInfo        = 0x01000011
 )
+
+var packetTypeToName = map[uint32]string{
+	PacketGameOver:           "Game Over",
+	PacketACK:                "ACK",
+	PacketLogin:              "Login",
+	PacketProfile:            "Profile",
+	PacketProfileBusy:        "Profile Busy",
+	PacketRequestWorldBest:   "Request World Best",
+	PacketWorldBest:          "World Best",
+	PacketRequestRankMode:    "Request Rank Mode",
+	PacketRankMode:           "Rank Mode",
+	PacketRequestLevelUpInfo: "Request Levelup Info",
+	PacketLevelUpInfo:        "Levelup Info",
+	PacketScoreBoard:         "Score Board",
+	PacketEnterProfile:       "Enter Profile",
+	PacketBye:                "Bye",
+	PacketMachineInfo:        "Machine Info",
+}
+
+func GetPacketName(t uint32) string {
+	if name, ok := packetTypeToName[t]; ok {
+		return name
+	}
+
+	return fmt.Sprintf("Unknown 0x%x", t)
+}

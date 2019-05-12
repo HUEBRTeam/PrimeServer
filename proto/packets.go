@@ -1,11 +1,43 @@
 package proto
 
-import "unsafe"
+import (
+	"encoding/hex"
+	"fmt"
+	"unsafe"
+)
+
+type SimplePacket struct {
+	PacketHead uint32
+	PacketType uint32
+}
 
 type ACKPacket struct {
-	PacketHead  uint32 // 0x0000001
-	PacketType  uint32 // 0x04 0x1000002 // 0x3000000
-	PacketTrail uint32 // 0x08 0xFFFFFFF // 0xFFFF
+	SimplePacket
+	PacketTrail uint32
+}
+
+type ProfileBusyPacket struct {
+	SimplePacket
+	Unk0 uint32
+}
+type ByePacket struct {
+	SimplePacket
+	ProfileID uint32
+}
+
+type EnterProfilePacket struct {
+	SimplePacket
+	PlayerID  uint32
+	MachineID uint32
+	ProfileID uint32
+}
+
+type RequestWorldBestPacket struct {
+	SimplePacket
+}
+
+type RequestRankModePacket struct {
+	SimplePacket
 }
 
 type MachineInfoPacket struct {
@@ -39,9 +71,48 @@ type MachineInfoPacket struct {
 	Unk16          uint32
 	Unk17          uint32
 	Unk18          uint32
-	Unk19          uint32
-	Unk20          [76]uint8
+	Unk19          [76]uint8
 	NetworkAddress PIUString16
+}
+
+func (p *MachineInfoPacket) String() string {
+	s := "Machine Packet"
+
+	s += fmt.Sprintf("\tPacketHead: %d (0x%x)\n", p.PacketHead, p.PacketHead)
+	s += fmt.Sprintf("\tPacketType: %d (0x%x)\n", p.PacketType, p.PacketType)
+	s += fmt.Sprintf("\tMachineID: %d (0x%x)\n", p.MachineID, p.MachineID)
+	s += fmt.Sprintf("\tDongle ID: %d (0x%x)\n", p.DongleID, p.DongleID)
+	s += fmt.Sprintf("\tCountry ID: %d (0x%x)\n", p.CountryID, p.CountryID)
+	s += fmt.Sprintf("\tMac Address: %s\n", p.MacAddress)
+	s += fmt.Sprintf("\tVersion: %s\n", p.Version)
+	s += fmt.Sprintf("\tProcessor: %s\n", p.Processor)
+	s += fmt.Sprintf("\tMother Board: %s\n", p.MotherBoard)
+	s += fmt.Sprintf("\tGraphics Card: %s\n", p.GraphicsCard)
+	s += fmt.Sprintf("\tHDD Serial: %s\n", p.HDDSerial)
+	s += fmt.Sprintf("\tUSB Mode: %s\n", p.USBMode)
+	s += fmt.Sprintf("\tMemory: %d\n", p.Memory)
+	s += fmt.Sprintf("\tConfig Magic: %d (0x%x)\n", p.ConfigMagic, p.ConfigMagic)
+	s += fmt.Sprintf("\tNet Address: %s\n", p.NetworkAddress)
+
+	s += fmt.Sprintf("\tUnknown uint32_t  3: %d (0x%x)\n", p.Unk3, p.Unk3)
+	s += fmt.Sprintf("\tUnknown uint32_t  4: %d (0x%x)\n", p.Unk4, p.Unk4)
+	s += fmt.Sprintf("\tUnknown uint32_t  5: %d (0x%x)\n", p.Unk5, p.Unk5)
+	s += fmt.Sprintf("\tUnknown uint32_t  6: %d (0x%x)\n", p.Unk6, p.Unk6)
+	s += fmt.Sprintf("\tUnknown uint32_t  7: %d (0x%x)\n", p.Unk7, p.Unk7)
+	s += fmt.Sprintf("\tUnknown uint32_t  8: %d (0x%x)\n", p.Unk8, p.Unk8)
+	s += fmt.Sprintf("\tUnknown uint32_t  9: %d (0x%x)\n", p.Unk9, p.Unk9)
+	s += fmt.Sprintf("\tUnknown uint32_t 10: %d (0x%x)\n", p.Unk10, p.Unk10)
+	s += fmt.Sprintf("\tUnknown uint32_t 11: %d (0x%x)\n", p.Unk11, p.Unk11)
+	s += fmt.Sprintf("\tUnknown uint32_t 12: %d (0x%x)\n", p.Unk12, p.Unk12)
+	s += fmt.Sprintf("\tUnknown uint32_t 13: %d (0x%x)\n", p.Unk13, p.Unk13)
+	s += fmt.Sprintf("\tUnknown uint32_t 14: %d (0x%x)\n", p.Unk14, p.Unk14)
+	s += fmt.Sprintf("\tUnknown uint32_t 15: %d (0x%x)\n", p.Unk15, p.Unk15)
+	s += fmt.Sprintf("\tUnknown uint32_t 16: %d (0x%x)\n", p.Unk16, p.Unk16)
+	s += fmt.Sprintf("\tUnknown uint32_t 17: %d (0x%x)\n", p.Unk17, p.Unk17)
+	s += fmt.Sprintf("\tUnknown uint32_t 18: %d (0x%x)\n", p.Unk18, p.Unk18)
+	s += fmt.Sprintf("\tUnknown String: %s\n", hex.EncodeToString(p.Unk19[:]))
+
+	return s
 }
 
 type ScoreBoardPacket struct {
@@ -157,8 +228,19 @@ type WorldBestScore struct {
 	Nickname   PIUNickname //
 }
 
+type RankModePacket struct {
+	SimplePacket
+	Ranks [400]SongRank
+}
+
+type SongRank struct {
+	SongID uint32
+	First  PIUNickname
+	Second PIUNickname
+	Third  PIUNickname
+}
+
 const ACKPacketLength = int(unsafe.Sizeof(ACKPacket{}))
-const MachineInfoPacketLength = int(unsafe.Sizeof(MachineInfoPacket{}))
 const MachineInfoPacketLength = int(unsafe.Sizeof(MachineInfoPacket{}))
 const ScoreBoardPacketLength = int(unsafe.Sizeof(ScoreBoardPacket{}))
 const LoginPacketLength = int(unsafe.Sizeof(LoginPacket{}))
@@ -169,6 +251,12 @@ const LevelUpInfoPacketLength = int(unsafe.Sizeof(LevelUpInfoPacket{}))
 const GameOverPacketLength = int(unsafe.Sizeof(GameOverPacket{}))
 const WorldBestPacketLength = int(unsafe.Sizeof(WorldBestPacket{}))
 const WorldBestScoreLength = int(unsafe.Sizeof(WorldBestScore{}))
+const ProfileBusyPacketLength = int(unsafe.Sizeof(ProfileBusyPacket{}))
+const ByePacketLength = int(unsafe.Sizeof(ByePacket{}))
+const EnterProfilePacketLength = int(unsafe.Sizeof(EnterProfilePacket{}))
+const RequestWorldBestPacketLength = int(unsafe.Sizeof(RequestWorldBestPacket{}))
+const RankModePacketLength = int(unsafe.Sizeof(RankModePacket{}))
+const RequestRankModePacketLength = int(unsafe.Sizeof(RequestRankModePacket{}))
 
 var BiggestPacket = 0
 
@@ -177,6 +265,8 @@ func init() {
 		ACKPacketLength, MachineInfoPacketLength, MachineInfoPacketLength,
 		ScoreBoardPacketLength, LoginPacketLength, ProfilePacketLength, RequestLevelUpInfoPacketLength,
 		LevelUpInfoPacketLength, GameOverPacketLength, WorldBestPacketLength,
+		ProfileBusyPacketLength, ByePacketLength, EnterProfilePacketLength,
+		RequestWorldBestPacketLength, RankModePacketLength, RequestRankModePacketLength,
 	}
 
 	for _, v := range packetLens {

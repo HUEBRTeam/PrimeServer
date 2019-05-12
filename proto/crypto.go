@@ -1,19 +1,20 @@
 package proto
 
 import (
+	"crypto/rand"
 	"encoding/binary"
 	"github.com/HUEBRTeam/PrimeServer"
+	"github.com/quan-to/slog"
 	"golang.org/x/crypto/nacl/box"
 )
 
-var LastNounce []byte
+var clog = slog.Scope("Crypto")
 
 func DecryptPacket(packet []byte) ([]byte, bool) {
 	var nonceBytes [24]byte
 
 	nonce := packet[:24]
 	data := packet[24:]
-	LastNounce = nonce
 
 	copy(nonceBytes[:], nonce)
 
@@ -22,7 +23,13 @@ func DecryptPacket(packet []byte) ([]byte, bool) {
 
 func EncryptPacket(packet []byte) []byte {
 	var nonceBytes [24]byte
-	copy(nonceBytes[:], LastNounce)
+
+	_, err := rand.Read(nonceBytes[:])
+
+	if err != nil {
+		clog.Error("Error reading from crypto/random: %s", err)
+		return nil
+	}
 
 	outEnc := box.Seal(nil, packet, &nonceBytes, &PrimeServer.ServerPublicKeyBytes, &PrimeServer.ServerPrivateKeyBytes)
 

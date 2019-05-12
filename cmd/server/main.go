@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/binary"
-	"fmt"
 	"github.com/HUEBRTeam/PrimeServer/proto"
+	"github.com/quan-to/slog"
 	"net"
 	"os"
 )
@@ -13,21 +13,24 @@ const (
 	ConnType = "tcp"
 )
 
+var log = slog.Scope("PrimeServer")
+
 func main() {
 	// Listen for incoming connections.
 	l, err := net.Listen(ConnType, ":"+ConnPort)
 	if err != nil {
-		fmt.Println("Error listening:", err.Error())
+		log.Error("Error listening: %s", err.Error())
 		os.Exit(1)
 	}
 	// Close the listener when the application closes.
 	defer l.Close()
-	fmt.Println("Listening on :" + ConnPort)
+
+	log.Info("Listening on :%s", ConnPort)
 	for {
 		// Listen for an incoming connection.
 		conn, err := l.Accept()
 		if err != nil {
-			fmt.Println("Error accepting: ", err.Error())
+			log.Error("Error accepting: %s", err.Error())
 			os.Exit(1)
 		}
 		// Handle connections in a new goroutine.
@@ -35,53 +38,74 @@ func main() {
 	}
 }
 
+func SendPacket(conn net.Conn, data []byte) {
+	conn.Write(proto.EncryptPacket(data))
+}
+
+func ACK(conn net.Conn) {
+	// Send ACK
+	ack := proto.MakeACKPacket()
+	SendPacket(conn, ack.ToBinary())
+}
+
 func handlePacket(conn net.Conn, packet []byte) {
+	l := slog.Scope(conn.RemoteAddr().String())
 	dec, ok := proto.DecryptPacket(packet)
 
 	if !ok {
-		fmt.Println("Received invalid packet")
+		l.Error("Received invalid packet.")
 		return
 	}
 
-	packetType := binary.LittleEndian.Uint32(dec[4:8])
+	p, err := proto.DecodePacket(dec)
 
-	switch packetType {
-	case proto.PacketMachineInfo2:
-		fmt.Println("Received Machine Info V2")
-	default:
-		fmt.Printf("Received packet 0x%x\n", packetType)
+	if err != nil {
+		l.Error("Error parsing packet: %s", err)
+		return
 	}
 
-	// Send ACK
-	ack := proto.MakeACKPacket()
-	conn.Write(proto.EncryptPacket(ack.ToBinary()))
+	l.Debug("Received Packet: %s", p.GetName())
+
+	switch v := p.(type) {
+	case *proto.RequestWorldBestPacket:
+		wb := proto.MakeWorldBestPacket(nil)
+		SendPacket(conn, wb.ToBinary())
+	case *proto.RequestRankModePacket:
+		rm := proto.MakeRankModePacket(nil)
+		SendPacket(conn, rm.ToBinary())
+	case *proto.MachineInfoPacket:
+		log.Debug(v)
+		ACK(conn)
+	default:
+		ACK(conn)
+	}
 }
 
 // Handles incoming requests.
 func handleRequest(conn net.Conn) {
+	l := slog.Scope(conn.RemoteAddr().String())
 	buf := make([]byte, 1024)
 	c := 0
 	running := true
 	defer conn.Close()
+
+	log.Debug("Connection from %s", conn.RemoteAddr().String())
+
 	for running {
 		// Read the incoming connection into the buffer.
 		n, err := conn.Read(buf[c:])
 		if err != nil {
-			fmt.Println("Error reading:", err.Error())
+			l.Error("Error reading: %s", err.Error())
 			running = false
 			return
 		}
 		c += n
 
-		fmt.Printf("Received %d bytes\n", c)
-
 		if c > 4 {
 			plen := int(binary.LittleEndian.Uint32(buf[:4]))
 
-			fmt.Printf("Waiting for %d bytes got %d\n", plen, c)
-
 			if plen > proto.BiggestPacket {
-				fmt.Printf("Invalid packet length: %d", plen)
+				l.Error("Invalid packet length: %d", plen)
 				running = false
 				return
 			}

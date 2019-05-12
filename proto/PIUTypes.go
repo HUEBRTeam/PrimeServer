@@ -2,6 +2,13 @@ package proto
 
 import "bytes"
 
+type GenericPacket interface {
+	FromBinary([]byte) error
+	ToBinary() []byte
+	GetType() uint32
+	GetName() string
+}
+
 type PIUString12 [12]uint8
 type PIUString16 [16]uint8
 type PIUMacAddress [20]uint8
@@ -50,6 +57,14 @@ func MakePIUNickName(nickname string) PIUNickname {
 
 // region To String Handlers
 func (n PIUString12) String() string {
+	s := bytes.Index(n[:], []byte{0})
+	if s == -1 {
+		s = 12
+	}
+	return string(n[:s])
+}
+
+func (n PIUNickname) String() string {
 	s := bytes.Index(n[:], []byte{0})
 	if s == -1 {
 		s = 12
