@@ -9,30 +9,39 @@ type ACKPacket struct {
 }
 
 type MachineInfoPacket struct {
-	PacketHead   uint32        //    0x00 0x0000001
-	PacketType   uint32        //    0x04 0x1000001
-	Unk0         uint32        //    0x08
-	DongleID     uint32        //    0x0C
-	Unk2         uint32        //    0x10
-	MacAddress   PIUMacAddress //    0x14
-	Version      PIUString12   //    0x28
-	Processor    PIUString128  //    0x34
-	MotherBoard  PIUString128  //    0xb4
-	GraphicsCard PIUString128  //    0x134
-	HDDSerial    PIUString32   //    0x1b4
-	USBMode      PIUString128  //    Mode 1.0 / Mode 1.1 / Mode 2.0
-	Memory       uint32        //    0x254
-	Unk6         uint32        //    0x258
-	Unk7         uint32        //    0x25c
-	Unk8         uint32        //    0x260
-	Unk9         uint32        //    0x264
-	Unk10        uint32        //    0x268
-	Unk11        uint32        //    0x26c
-	Unk12        uint32        //    0x270
-	Unk13        uint32        //    0x274
-	Unk14        uint32        //    0x278
-	Unk15        uint32        //    0x27c
-	Unk16        [104]uint8    //    0x280
+	PacketHead     uint32        //    0x00 0x0000001
+	PacketType     uint32        //    0x04 0x1000011
+	MachineID      uint32        //    0x08
+	DongleID       uint32        //    0x0C
+	CountryID      uint32        //    0x10
+	MacAddress     PIUMacAddress //    0x14
+	Version        PIUString12   //    0x28
+	Processor      PIUString128  //    0x34
+	MotherBoard    PIUString128  //    0xb4
+	GraphicsCard   PIUString128  //    0x134
+	HDDSerial      PIUString32   //    0x1b4
+	USBMode        PIUString128  //    Mode 1.0 / Mode 1.1 / Mode 2.0
+	Memory         uint32        //    0x254
+	ConfigMagic    uint32        //    0x258
+	Unk3           uint32        //    0x25c
+	Unk4           uint32        //    0x260
+	Unk5           uint32        //    0x264
+	Unk6           uint32        //    0x268
+	Unk7           uint32        //    0x26c
+	Unk8           uint32        //    0x270
+	Unk9           uint32        //    0x274
+	Unk10          uint32        //    0x278
+	Unk11          uint32        //    0x27c
+	Unk12          uint32
+	Unk13          uint32
+	Unk14          uint32
+	Unk15          uint32
+	Unk16          uint32
+	Unk17          uint32
+	Unk18          uint32
+	Unk19          uint32
+	Unk20          [76]uint8
+	NetworkAddress PIUString16
 }
 
 type ScoreBoardPacket struct {
@@ -150,6 +159,7 @@ type WorldBestScore struct {
 
 const ACKPacketLength = int(unsafe.Sizeof(ACKPacket{}))
 const MachineInfoPacketLength = int(unsafe.Sizeof(MachineInfoPacket{}))
+const MachineInfoPacketLength = int(unsafe.Sizeof(MachineInfoPacket{}))
 const ScoreBoardPacketLength = int(unsafe.Sizeof(ScoreBoardPacket{}))
 const LoginPacketLength = int(unsafe.Sizeof(LoginPacket{}))
 const ProfilePacketLength = int(unsafe.Sizeof(ProfilePacket{}))
@@ -159,3 +169,19 @@ const LevelUpInfoPacketLength = int(unsafe.Sizeof(LevelUpInfoPacket{}))
 const GameOverPacketLength = int(unsafe.Sizeof(GameOverPacket{}))
 const WorldBestPacketLength = int(unsafe.Sizeof(WorldBestPacket{}))
 const WorldBestScoreLength = int(unsafe.Sizeof(WorldBestScore{}))
+
+var BiggestPacket = 0
+
+func init() {
+	packetLens := []int{
+		ACKPacketLength, MachineInfoPacketLength, MachineInfoPacketLength,
+		ScoreBoardPacketLength, LoginPacketLength, ProfilePacketLength, RequestLevelUpInfoPacketLength,
+		LevelUpInfoPacketLength, GameOverPacketLength, WorldBestPacketLength,
+	}
+
+	for _, v := range packetLens {
+		if v > BiggestPacket {
+			BiggestPacket = v
+		}
+	}
+}

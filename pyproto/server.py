@@ -42,6 +42,14 @@ def ProcessPacket(packet, socket):
         ba = EncryptPacket(ack.ToBinary(), pk, sk)
         print "Sending ACK"
         socket.send(ba)
+    elif packtype == MachineInfoPacket_v2.PacketType:
+        data = MachineInfoPacket_v2()
+        data.FromBinary(packet)
+        data.Print()
+        ack = ACKPacket()
+        ba = EncryptPacket(ack.ToBinary(), pk, sk)
+        print "Sending ACK"
+        socket.send(ba)
     elif packtype == LoginPacket.PacketType:
         data = LoginPacket()
         data.FromBinary(packet)
@@ -79,7 +87,7 @@ def ProcessPacket(packet, socket):
 
 
 HOST = ''               # Endereco IP do Servidor
-PORT = 60000            # Porta que o Servidor esta
+PORT = 60010            # Porta que o Servidor esta
 tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 orig = (HOST, PORT)

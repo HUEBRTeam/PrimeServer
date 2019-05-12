@@ -22,6 +22,14 @@ func (p *MachineInfoPacket) FromBinary(data []byte) error {
 	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
 }
 
+func (p *MachineInfoPacket) FromBinary(data []byte) error {
+	if len(data) != MachineInfoPacketLength {
+		return fmt.Errorf("expected payload to have %d bytes got %d instead", MachineInfoPacketLength, len(data))
+	}
+
+	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
+}
+
 func (p *ScoreBoardPacket) FromBinary(data []byte) error {
 	if len(data) != ScoreBoardPacketLength {
 		return fmt.Errorf("expected payload to have %d bytes got %d instead", ScoreBoardPacketLength, len(data))
@@ -92,4 +100,76 @@ func (p *WorldBestScore) FromBinary(data []byte) error {
 	}
 
 	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
+}
+
+func (p *ACKPacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *MachineInfoPacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *MachineInfoPacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *ScoreBoardPacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *LoginPacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *ProfilePacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *UScore) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *RequestLevelUpInfoPacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *LevelUpInfoPacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *GameOverPacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *WorldBestPacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *WorldBestScore) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
 }

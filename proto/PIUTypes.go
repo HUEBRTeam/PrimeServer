@@ -3,6 +3,7 @@ package proto
 import "bytes"
 
 type PIUString12 [12]uint8
+type PIUString16 [16]uint8
 type PIUMacAddress [20]uint8
 type PIUString32 [32]uint8
 type PIUString128 [128]uint8
@@ -11,6 +12,13 @@ type PIUNickname PIUString12
 func MakePIUString12(data string) PIUString12 {
 	p := PIUString12{}
 	p2 := makePIUString(data, 12)
+	copy(p[:], p2)
+	return p
+}
+
+func MakePIUString16(data string) PIUString16 {
+	p := PIUString16{}
+	p2 := makePIUString(data, 16)
 	copy(p[:], p2)
 	return p
 }
@@ -42,6 +50,14 @@ func MakePIUNickName(nickname string) PIUNickname {
 
 // region To String Handlers
 func (n PIUString12) String() string {
+	s := bytes.Index(n[:], []byte{0})
+	if s == -1 {
+		s = 12
+	}
+	return string(n[:s])
+}
+
+func (n PIUString16) String() string {
 	s := bytes.Index(n[:], []byte{0})
 	if s == -1 {
 		s = 12
