@@ -130,3 +130,13 @@ func MakeLevelupInfoPacket(profileId, level uint32) *LevelUpInfoPacket {
 		Level:      level,
 	}
 }
+
+func MakeKeepAlivePacket() *KeepAlivePacket {
+	return &KeepAlivePacket{
+		SimplePacket: SimplePacket{
+			PacketHead: PacketHead,
+			PacketType: PacketKeepAlive,
+		},
+		PacketTrail: 65535,
+	}
+}

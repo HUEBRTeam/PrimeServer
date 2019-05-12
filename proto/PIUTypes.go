@@ -75,7 +75,7 @@ func (n PIUNickname) String() string {
 func (n PIUString16) String() string {
 	s := bytes.Index(n[:], []byte{0})
 	if s == -1 {
-		s = 12
+		s = 16
 	}
 	return string(n[:s])
 }
@@ -91,7 +91,7 @@ func (n PIUMacAddress) String() string {
 func (n PIUString32) String() string {
 	s := bytes.Index(n[:], []byte{0})
 	if s == -1 {
-		s = 20
+		s = 32
 	}
 	return string(n[:s])
 }

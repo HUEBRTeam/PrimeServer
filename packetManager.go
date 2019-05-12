@@ -28,3 +28,8 @@ func SendLevelUpPacket(conn net.Conn, profileId, level uint32) {
 	lu := proto.MakeLevelupInfoPacket(profileId, level)
 	SendPacket(conn, lu.ToBinary())
 }
+
+func SendKeepAlive(conn net.Conn) {
+	ka := proto.MakeKeepAlivePacket()
+	SendPacket(conn, ka.ToBinary())
+}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"io/ioutil"
 )
 
 // region FromBinary
@@ -34,6 +35,13 @@ func (p *ScoreBoardPacket) FromBinary(data []byte) error {
 func (p *LoginPacket) FromBinary(data []byte) error {
 	if len(data) != LoginPacketLength {
 		return fmt.Errorf("(%s) expected payload to have %d bytes got %d instead", p.GetName(), LoginPacketLength, len(data))
+	}
+
+	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
+}
+func (p *LoginPacketV2) FromBinary(data []byte) error {
+	if len(data) != LoginPacketV2Length {
+		return fmt.Errorf("(%s) expected payload to have %d bytes got %d instead", p.GetName(), LoginPacketV2Length, len(data))
 	}
 
 	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
@@ -120,6 +128,12 @@ func (p *RequestRankModePacket) FromBinary(data []byte) error {
 	}
 	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
 }
+func (p *KeepAlivePacket) FromBinary(data []byte) error {
+	if len(data) != KeepAlivePacketLength {
+		return fmt.Errorf("(%s) expected payload to have %d bytes got %d instead", p.GetName(), KeepAlivePacketLength, len(data))
+	}
+	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
+}
 
 // endregion
 // region ToBinary
@@ -142,6 +156,12 @@ func (p *ScoreBoardPacket) ToBinary() []byte {
 }
 
 func (p *LoginPacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
+func (p *LoginPacketV2) ToBinary() []byte {
 	b := bytes.NewBuffer(nil)
 	binary.Write(b, binary.LittleEndian, p)
 	return b.Bytes()
@@ -225,6 +245,12 @@ func (p *RequestRankModePacket) ToBinary() []byte {
 	return b.Bytes()
 }
 
+func (p *KeepAlivePacket) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
 // endregion
 // region GetType
 func (p *ACKPacket) GetType() uint32 {
@@ -241,6 +267,10 @@ func (p *ScoreBoardPacket) GetType() uint32 {
 
 func (p *LoginPacket) GetType() uint32 {
 	return PacketLogin
+}
+
+func (p *LoginPacketV2) GetType() uint32 {
+	return PacketLoginV2
 }
 
 func (p *ProfilePacket) GetType() uint32 {
@@ -287,6 +317,10 @@ func (p *RequestRankModePacket) GetType() uint32 {
 	return PacketRequestRankMode
 }
 
+func (p *KeepAlivePacket) GetType() uint32 {
+	return PacketKeepAlive
+}
+
 // endregion
 // region GetName
 func (p *ACKPacket) GetName() string {
@@ -302,6 +336,10 @@ func (p *ScoreBoardPacket) GetName() string {
 }
 
 func (p *LoginPacket) GetName() string {
+	return GetPacketName(p.GetType())
+}
+
+func (p *LoginPacketV2) GetName() string {
 	return GetPacketName(p.GetType())
 }
 
@@ -349,6 +387,10 @@ func (p *RequestRankModePacket) GetName() string {
 	return GetPacketName(p.GetType())
 }
 
+func (p *KeepAlivePacket) GetName() string {
+	return GetPacketName(p.GetType())
+}
+
 // endregion
 
 func DecodePacket(data []byte) (GenericPacket, error) {
@@ -386,7 +428,12 @@ func DecodePacket(data []byte) (GenericPacket, error) {
 		gp = &ByePacket{}
 	case PacketMachineInfo:
 		gp = &MachineInfoPacket{}
+	case PacketLoginV2:
+		gp = &LoginPacketV2{}
+	case PacketKeepAlive:
+		gp = &KeepAlivePacket{}
 	default:
+		_ = ioutil.WriteFile(fmt.Sprintf("%08x.bin", packetType), data, 0777)
 		return nil, fmt.Errorf("no such packet type %08x", packetType)
 	}
 

@@ -27,3 +27,18 @@ func TestMachineInfoPacket_FromBinary(t *testing.T) {
 
 	t.Log(mip.String())
 }
+
+func TestProfilePacket_FromBinary(t *testing.T) {
+	data, err := ioutil.ReadFile("../RE/Packets/Login/sodium_12_in_pkt.bin")
+
+	if err != nil {
+		t.Fatalf("Error loading file: %s", err)
+	}
+
+	pp := ProfilePacket{}
+	err = pp.FromBinary(data)
+
+	if err != nil {
+		t.Fatalf("Error parsing packet: %s", err)
+	}
+}

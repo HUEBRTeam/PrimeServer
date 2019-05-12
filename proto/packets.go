@@ -1,9 +1,9 @@
 package proto
 
 import (
+	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"unsafe"
 )
 
 type SimplePacket struct {
@@ -38,6 +38,11 @@ type RequestWorldBestPacket struct {
 
 type RequestRankModePacket struct {
 	SimplePacket
+}
+
+type KeepAlivePacket struct {
+	SimplePacket
+	PacketTrail uint32
 }
 
 type MachineInfoPacket struct {
@@ -156,37 +161,51 @@ type LoginPacket struct {
 	PacketTrail uint32
 }
 
+type LoginPacketV2 struct {
+	PacketHead  uint32      //    0x00 0x0000004
+	PacketType  uint32      //    0x04 0x1000015
+	PlayerID    uint32      //    0x08
+	MachineID   uint32      //    0x0C
+	AccessCode  PIUString32 //  Hex String
+	Unk0        uint32
+	GameVersion PIUString12
+	PacketTrail uint32
+}
+
 type ProfilePacket struct {
 	PacketHead  uint32      //    0x00 0x0000001
 	PacketType  uint32      //    0x04 0x1000004
 	PlayerID    uint32      //    0x08
 	AccessCode  PIUString32 //    0x0C
-	ProfileID   uint32      //    0x10
+	Unk0        uint32
 	Nickname    PIUNickname //    0x30
-	CountryID   uint32      //    0x3C
-	Avatar      uint16      //    0x40
-	Level       uint16      //    0x42
-	EXP         uint32      //    0x44
-	Unk0        uint32      //    0x48
-	PP          uint32      //    0x4C
+	ProfileID   uint32      //    0x10
+	CountryID   uint8       //    0x3C
+	Avatar      uint8       //    0x40
+	Level       uint8       //    0x42
+	Unk1        uint8
+	EXP         uint64
+	PP          uint64
 	RankSingle  uint64
 	RankDouble  uint64
-	RunningStep uint64 //    0x64
+	RunningStep uint64
 	PlayCount   uint32
 	Kcal        float32
 	Modifiers   uint64
-	Unk1        uint32
+	Unk2        uint32
+	RushSpeed   float32
+	Unk3        uint32
 	Scores      [4384]UScore //    0x88
 }
 
 type UScore struct {
-	SongID     uint32 //    0x00
-	ChartLevel uint8  //    0x04
-	Unk0       uint8  //    0x05
-	Unk1       uint16 //    0x06
-	Score      uint32 //    0x08
-	RealScore  uint32 //   Maybe
-	Unk2       uint32 //    0x10
+	SongID       uint32 //    0x00
+	ChartLevel   uint8  //    0x04
+	Unk0         uint8  //    0x05
+	GameDataFlag uint16 //    0x06
+	Score        uint32 //    0x08
+	RealScore    uint32 //   Maybe
+	Unk2         uint32 //    0x10
 }
 
 type RequestLevelUpInfoPacket struct {
@@ -244,31 +263,37 @@ type SongRank struct {
 	Third  PIUNickname
 }
 
-const ACKPacketLength = int(unsafe.Sizeof(ACKPacket{}))
-const MachineInfoPacketLength = int(unsafe.Sizeof(MachineInfoPacket{}))
-const ScoreBoardPacketLength = int(unsafe.Sizeof(ScoreBoardPacket{}))
-const LoginPacketLength = int(unsafe.Sizeof(LoginPacket{}))
-const ProfilePacketLength = int(unsafe.Sizeof(ProfilePacket{}))
-const RequestLevelUpInfoPacketLength = int(unsafe.Sizeof(RequestLevelUpInfoPacket{}))
-const LevelUpInfoPacketLength = int(unsafe.Sizeof(LevelUpInfoPacket{}))
-const GameOverPacketLength = int(unsafe.Sizeof(GameOverPacket{}))
-const WorldBestPacketLength = int(unsafe.Sizeof(WorldBestPacket{}))
-const ProfileBusyPacketLength = int(unsafe.Sizeof(ProfileBusyPacket{}))
-const ByePacketLength = int(unsafe.Sizeof(ByePacket{}))
-const EnterProfilePacketLength = int(unsafe.Sizeof(EnterProfilePacket{}))
-const RequestWorldBestPacketLength = int(unsafe.Sizeof(RequestWorldBestPacket{}))
-const RankModePacketLength = int(unsafe.Sizeof(RankModePacket{}))
-const RequestRankModePacketLength = int(unsafe.Sizeof(RequestRankModePacket{}))
+var ACKPacketLength = int(binary.Size(ACKPacket{}))
+var MachineInfoPacketLength = int(binary.Size(MachineInfoPacket{}))
+var ScoreBoardPacketLength = int(binary.Size(ScoreBoardPacket{}))
+var LoginPacketLength = int(binary.Size(LoginPacket{}))
+var ProfilePacketLength = int(binary.Size(ProfilePacket{}))
+var RequestLevelUpInfoPacketLength = int(binary.Size(RequestLevelUpInfoPacket{}))
+var LevelUpInfoPacketLength = int(binary.Size(LevelUpInfoPacket{}))
+var GameOverPacketLength = int(binary.Size(GameOverPacket{}))
+var WorldBestPacketLength = int(binary.Size(WorldBestPacket{}))
+var ProfileBusyPacketLength = int(binary.Size(ProfileBusyPacket{}))
+var ByePacketLength = int(binary.Size(ByePacket{}))
+var EnterProfilePacketLength = int(binary.Size(EnterProfilePacket{}))
+var RequestWorldBestPacketLength = int(binary.Size(RequestWorldBestPacket{}))
+var RankModePacketLength = int(binary.Size(RankModePacket{}))
+var RequestRankModePacketLength = int(binary.Size(RequestRankModePacket{}))
+var LoginPacketV2Length = int(binary.Size(LoginPacketV2{}))
+var KeepAlivePacketLength = int(binary.Size(KeepAlivePacket{}))
 
 var BiggestPacket = 0
 
 func init() {
+
+	fmt.Println(ProfilePacketLength)
+
 	packetLens := []int{
 		ACKPacketLength, MachineInfoPacketLength, MachineInfoPacketLength,
 		ScoreBoardPacketLength, LoginPacketLength, ProfilePacketLength, RequestLevelUpInfoPacketLength,
 		LevelUpInfoPacketLength, GameOverPacketLength, WorldBestPacketLength,
 		ProfileBusyPacketLength, ByePacketLength, EnterProfilePacketLength,
 		RequestWorldBestPacketLength, RankModePacketLength, RequestRankModePacketLength,
+		LoginPacketV2Length, KeepAlivePacketLength,
 	}
 
 	for _, v := range packetLens {

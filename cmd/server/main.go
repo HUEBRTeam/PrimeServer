@@ -7,8 +7,10 @@ import (
 	"github.com/HUEBRTeam/PrimeServer/Storage"
 	"github.com/HUEBRTeam/PrimeServer/proto"
 	"github.com/quan-to/slog"
+	"io"
 	"net"
 	"os"
+	"time"
 )
 
 const (
@@ -45,8 +47,11 @@ func main() {
 	}
 }
 
-func handlePacket(conn net.Conn, packet []byte) {
-	l := slog.Scope(conn.RemoteAddr().String())
+func handlePacket(cs *PrimeServer.ClientSession, packet []byte) {
+	cs.Lock()
+	defer cs.Unlock()
+
+	l := slog.Scope(cs.Conn.RemoteAddr().String())
 	dec, ok := proto.DecryptPacket(packet)
 
 	if !ok {
@@ -61,35 +66,49 @@ func handlePacket(conn net.Conn, packet []byte) {
 		return
 	}
 
-	l.Debug("Received Packet: %s", p.GetName())
-
 	switch v := p.(type) {
 	case *proto.RequestWorldBestPacket:
-		handleRequestWorldBestPacket(l, conn, *v)
+		handleRequestWorldBestPacket(l, cs.Conn, *v)
 
 	case *proto.RequestRankModePacket:
-		handleRequestRankModePacket(l, conn, *v)
+		handleRequestRankModePacket(l, cs.Conn, *v)
 
 	case *proto.LoginPacket:
-		handleLoginPacket(l, conn, *v)
+		handleLoginPacket(l, cs.Conn, *v)
+
+	case *proto.LoginPacketV2:
+		handleLoginPacketV2(l, cs.Conn, *v)
 
 	case *proto.EnterProfilePacket:
-		handleEnterProfilePacket(l, conn, *v)
+		handleEnterProfilePacket(l, cs.Conn, *v)
 
 	case *proto.MachineInfoPacket:
-		handleMachineInfoPacket(l, conn, *v)
+		handleMachineInfoPacket(l, cs.Conn, *v)
 
 	case *proto.ScoreBoardPacket:
-		handleScoreBoardPacket(l, conn, *v)
+		handleScoreBoardPacket(l, cs.Conn, *v)
 
 	case *proto.RequestLevelUpInfoPacket:
-		handleRequestLevelupInfo(l, conn, *v)
+		handleRequestLevelupInfo(l, cs.Conn, *v)
 
 	case *proto.ByePacket:
-		handleByePacket(l, conn, *v)
+		handleByePacket(l, cs.Conn, *v)
+
+	case *proto.KeepAlivePacket:
+		PrimeServer.SendACK(cs.Conn)
 
 	default:
-		PrimeServer.SendACK(conn)
+		l.Debug("Received Packet: %s", p.GetName())
+		PrimeServer.SendACK(cs.Conn)
+	}
+}
+
+func handleKeepAlive(cs *PrimeServer.ClientSession) {
+	for cs.Running {
+		time.Sleep(time.Second * 5)
+		cs.Lock()
+		PrimeServer.SendKeepAlive(cs.Conn)
+		cs.Unlock()
 	}
 }
 
@@ -98,17 +117,25 @@ func handleRequest(conn net.Conn) {
 	l := slog.Scope(conn.RemoteAddr().String())
 	buf := make([]byte, 1024)
 	c := 0
-	running := true
 	defer conn.Close()
 
 	log.Debug("Connection from %s", conn.RemoteAddr().String())
 
-	for running {
+	cs := PrimeServer.MakeClientSession(conn)
+	cs.Running = true
+
+	go handleKeepAlive(cs)
+
+	for cs.Running {
 		// Read the incoming connection into the buffer.
 		n, err := conn.Read(buf[c:])
 		if err != nil {
-			l.Error("Error reading: %s", err.Error())
-			running = false
+			if err != io.EOF {
+				l.Error("Error reading: %s", err.Error())
+			} else {
+				l.Info("Client disconnected")
+			}
+			cs.Running = false
 			return
 		}
 		c += n
@@ -118,12 +145,12 @@ func handleRequest(conn net.Conn) {
 
 			if plen > proto.BiggestPacket {
 				l.Error("Invalid packet length: %d", plen)
-				running = false
+				cs.Running = false
 				return
 			}
 
 			if c >= plen {
-				handlePacket(conn, buf[4:plen])
+				handlePacket(cs, buf[4:plen])
 				copy(buf, buf[plen:])
 				c -= plen
 			}

@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"github.com/HUEBRTeam/PrimeServer"
+	"github.com/HUEBRTeam/PrimeServer/proto"
 	"golang.org/x/crypto/nacl/box"
 	"io/ioutil"
 	"testing"
@@ -16,7 +16,7 @@ func TestSodium(t *testing.T) {
 
 	copy(nonceBytes[:], nonce)
 
-	outEnc := box.Seal(nil, unenc, &nonceBytes, &PrimeServer.ServerPublicKeyBytes, &PrimeServer.ServerPrivateKeyBytes)
+	outEnc := box.Seal(nil, unenc, &nonceBytes, &proto.ServerPublicKeyBytes, &proto.ServerPrivateKeyBytes)
 
 	if len(outEnc) != len(enc) {
 		t.Fatalf("Expected output length to be %d got %d", len(enc), len(outEnc))
@@ -30,7 +30,7 @@ func TestSodium(t *testing.T) {
 
 	t.Log("Encryption OK")
 
-	outDec, ok := box.Open(nil, enc, &nonceBytes, &PrimeServer.ServerPublicKeyBytes, &PrimeServer.ServerPrivateKeyBytes)
+	outDec, ok := box.Open(nil, enc, &nonceBytes, &proto.ServerPublicKeyBytes, &proto.ServerPrivateKeyBytes)
 
 	if !ok {
 		t.Fatalf("Decryption error")

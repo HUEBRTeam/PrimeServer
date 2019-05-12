@@ -167,8 +167,8 @@ func (pm *ProfileManager) PutScoreBoard(sb proto.ScoreBoardPacket) {
 	if ok {
 		p := v.Profile
 
-		p.EXP += uint32(sb.EXP)
-		p.PP += uint32(sb.PP)
+		p.EXP += uint64(sb.EXP)
+		p.PP += uint64(sb.PP)
 		p.RunningStep += uint64(sb.RunningStep)
 		p.Kcal += sb.Kcal
 

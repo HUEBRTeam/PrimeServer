@@ -18,6 +18,17 @@ func handleLoginPacket(l *slog.Instance, conn net.Conn, v proto.LoginPacket) {
 	}
 }
 
+func handleLoginPacketV2(l *slog.Instance, conn net.Conn, v proto.LoginPacketV2) {
+	ac := v.AccessCode.String()
+	p, err := profileManager.Load(ac, v.PlayerID)
+	if err != nil {
+		l.Error("Error loading profile %s: %s", ac, err)
+		PrimeServer.SendProfileBusy(conn)
+	} else {
+		PrimeServer.SendProfile(conn, p)
+	}
+}
+
 func handleEnterProfilePacket(l *slog.Instance, conn net.Conn, v proto.EnterProfilePacket) {
 	err := profileManager.LockProfile(v.ProfileID)
 	if err != nil {
