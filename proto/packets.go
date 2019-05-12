@@ -76,7 +76,7 @@ type MachineInfoPacket struct {
 }
 
 func (p *MachineInfoPacket) String() string {
-	s := "Machine Packet"
+	s := "Machine Packet\n"
 
 	s += fmt.Sprintf("\tPacketHead: %d (0x%x)\n", p.PacketHead, p.PacketHead)
 	s += fmt.Sprintf("\tPacketType: %d (0x%x)\n", p.PacketType, p.PacketType)
@@ -136,42 +136,46 @@ type ScoreBoardPacket struct {
 	MaxCombo    uint32      //    0x48
 	EXP         uint16      //    0x4c
 	PP          uint16      //    0x4e
-	Unk1        uint16      //    0x50
+	RunningStep uint16      //    0x50
 	Unk2        uint16      //    0x52
 	Unk3        uint32      //    0x54
 	Unk4        uint32      //    0x58
 	Unk5        uint32      //    0x5c
-	Unk6        uint32      //    0x60
+	RushSpeed   float32     //    0x60
 	GameVersion PIUString12 //    0x64
-	trailing0   uint32      //    0xFFFFFF
-	trailing1   uint32      //   0xB21
+	MachineID   uint32      //    0xFFFFFF
+	ProfileID   uint32      //   0xB21
 }
 
 type LoginPacket struct {
-	PacketHead uint32      //    0x00 0x0000001
-	PacketType uint32      //    0x04 0x1000003
-	Unk0       uint32      //    0x08
-	Unk1       uint32      //    0x0C
-	AccessCode PIUString32 //  Hex String
-	Unk2       uint32
+	PacketHead  uint32      //    0x00 0x0000001
+	PacketType  uint32      //    0x04 0x1000003
+	PlayerID    uint32      //    0x08
+	MachineID   uint32      //    0x0C
+	AccessCode  PIUString32 //  Hex String
+	PacketTrail uint32
 }
 
 type ProfilePacket struct {
-	PacketHead  uint32       //    0x00 0x0000001
-	PacketType  uint32       //    0x04 0x1000004
-	Unk0        uint32       //    0x08
-	AccessCode  PIUString32  //    0x0C
-	Unk1        uint32       //    0x10
-	Nickname    PIUNickname  //    0x30
-	Unk2        uint32       //    0x3C
-	Unk3        uint16       //    0x40
-	Level       uint16       //    0x42
-	EXP         uint32       //    0x44
-	Unk4        uint32       //    0x48
-	PP          uint32       //    0x4C
-	Unk5        [20]uint8    //    0x50
-	RunningStep uint32       //    0x64
-	Unk6        [32]uint8    //    0x68
+	PacketHead  uint32      //    0x00 0x0000001
+	PacketType  uint32      //    0x04 0x1000004
+	PlayerID    uint32      //    0x08
+	AccessCode  PIUString32 //    0x0C
+	ProfileID   uint32      //    0x10
+	Nickname    PIUNickname //    0x30
+	CountryID   uint32      //    0x3C
+	Avatar      uint16      //    0x40
+	Level       uint16      //    0x42
+	EXP         uint32      //    0x44
+	Unk0        uint32      //    0x48
+	PP          uint32      //    0x4C
+	RankSingle  uint64
+	RankDouble  uint64
+	RunningStep uint64 //    0x64
+	PlayCount   uint32
+	Kcal        float32
+	Modifiers   uint64
+	Unk1        uint32
 	Scores      [4384]UScore //    0x88
 }
 
@@ -188,13 +192,13 @@ type UScore struct {
 type RequestLevelUpInfoPacket struct {
 	PacketHead uint32 //    0x00 0x0000001
 	PacketType uint32 //    0x04 0x100000C
-	Unk0       uint32 //    0x08 0xBD5
+	ProfileID  uint32 //    0x08 0xBD5
 }
 
 type LevelUpInfoPacket struct {
 	PacketHead uint32 //    0x00 0x0000001
 	PacketType uint32 //    0x04 0x100000D
-	Unk0       uint32 //    0x08 0xBD5
+	ProfileID  uint32 //    0x08 0xBD5
 	Level      uint32 //    0x0C
 }
 
@@ -245,12 +249,10 @@ const MachineInfoPacketLength = int(unsafe.Sizeof(MachineInfoPacket{}))
 const ScoreBoardPacketLength = int(unsafe.Sizeof(ScoreBoardPacket{}))
 const LoginPacketLength = int(unsafe.Sizeof(LoginPacket{}))
 const ProfilePacketLength = int(unsafe.Sizeof(ProfilePacket{}))
-const UScoreLength = int(unsafe.Sizeof(UScore{}))
 const RequestLevelUpInfoPacketLength = int(unsafe.Sizeof(RequestLevelUpInfoPacket{}))
 const LevelUpInfoPacketLength = int(unsafe.Sizeof(LevelUpInfoPacket{}))
 const GameOverPacketLength = int(unsafe.Sizeof(GameOverPacket{}))
 const WorldBestPacketLength = int(unsafe.Sizeof(WorldBestPacket{}))
-const WorldBestScoreLength = int(unsafe.Sizeof(WorldBestScore{}))
 const ProfileBusyPacketLength = int(unsafe.Sizeof(ProfileBusyPacket{}))
 const ByePacketLength = int(unsafe.Sizeof(ByePacket{}))
 const EnterProfilePacketLength = int(unsafe.Sizeof(EnterProfilePacket{}))

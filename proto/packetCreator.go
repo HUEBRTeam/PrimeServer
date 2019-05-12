@@ -101,3 +101,32 @@ func MakeRankModePacket(ranks []SongRank) *RankModePacket {
 		Ranks: r,
 	}
 }
+
+func MakeProfilePacket(name, accessCode string) *ProfilePacket {
+	return &ProfilePacket{
+		PacketHead:  0x0000001,
+		PacketType:  PacketProfile,
+		AccessCode:  MakePIUString32(accessCode),
+		Nickname:    MakePIUNickName(name),
+		CountryID:   0,
+		Avatar:      0,
+		Level:       0,
+		EXP:         0,
+		PP:          0,
+		RankSingle:  0,
+		RankDouble:  0,
+		PlayCount:   0,
+		Kcal:        0,
+		Modifiers:   0,
+		RunningStep: 0,
+	}
+}
+
+func MakeLevelupInfoPacket(profileId, level uint32) *LevelUpInfoPacket {
+	return &LevelUpInfoPacket{
+		PacketHead: PacketHead,
+		PacketType: PacketLevelUpInfo,
+		ProfileID:  profileId,
+		Level:      level,
+	}
+}

@@ -54,7 +54,7 @@ def ProcessPacket(packet, socket):
         data = LoginPacket()
         data.FromBinary(packet)
         data.Print()
-        print "Login Request from %s" %(data.AccessCode)
+        print "Login Request from %s" %data.AccessCode
         profpack.AccessCode = data.AccessCode
         ba = EncryptPacket(profpack.ToBinary(), pk, sk)
         print "Sending %s Profile" %profpack.Nickname

@@ -2,6 +2,9 @@ package main
 
 import (
 	"encoding/binary"
+	"github.com/HUEBRTeam/PrimeServer"
+	"github.com/HUEBRTeam/PrimeServer/ProfileManager"
+	"github.com/HUEBRTeam/PrimeServer/Storage"
 	"github.com/HUEBRTeam/PrimeServer/proto"
 	"github.com/quan-to/slog"
 	"net"
@@ -14,8 +17,12 @@ const (
 )
 
 var log = slog.Scope("PrimeServer")
+var profileManager *ProfileManager.ProfileManager
 
 func main() {
+	sb := Storage.MakeDiskBackend("profiles")
+	profileManager = ProfileManager.MakeProfileManager(sb)
+
 	// Listen for incoming connections.
 	l, err := net.Listen(ConnType, ":"+ConnPort)
 	if err != nil {
@@ -38,16 +45,6 @@ func main() {
 	}
 }
 
-func SendPacket(conn net.Conn, data []byte) {
-	conn.Write(proto.EncryptPacket(data))
-}
-
-func ACK(conn net.Conn) {
-	// Send ACK
-	ack := proto.MakeACKPacket()
-	SendPacket(conn, ack.ToBinary())
-}
-
 func handlePacket(conn net.Conn, packet []byte) {
 	l := slog.Scope(conn.RemoteAddr().String())
 	dec, ok := proto.DecryptPacket(packet)
@@ -68,16 +65,31 @@ func handlePacket(conn net.Conn, packet []byte) {
 
 	switch v := p.(type) {
 	case *proto.RequestWorldBestPacket:
-		wb := proto.MakeWorldBestPacket(nil)
-		SendPacket(conn, wb.ToBinary())
+		handleRequestWorldBestPacket(l, conn, *v)
+
 	case *proto.RequestRankModePacket:
-		rm := proto.MakeRankModePacket(nil)
-		SendPacket(conn, rm.ToBinary())
+		handleRequestRankModePacket(l, conn, *v)
+
+	case *proto.LoginPacket:
+		handleLoginPacket(l, conn, *v)
+
+	case *proto.EnterProfilePacket:
+		handleEnterProfilePacket(l, conn, *v)
+
 	case *proto.MachineInfoPacket:
-		log.Debug(v)
-		ACK(conn)
+		handleMachineInfoPacket(l, conn, *v)
+
+	case *proto.ScoreBoardPacket:
+		handleScoreBoardPacket(l, conn, *v)
+
+	case *proto.RequestLevelUpInfoPacket:
+		handleRequestLevelupInfo(l, conn, *v)
+
+	case *proto.ByePacket:
+		handleByePacket(l, conn, *v)
+
 	default:
-		ACK(conn)
+		PrimeServer.SendACK(conn)
 	}
 }
 

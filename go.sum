@@ -2,6 +2,8 @@ git.schwanenlied.me/yawning/chacha20.git v0.0.0-20170904085104-e3b1f968fc63/go.m
 github.com/Yawning/chacha20 v0.0.0-20170904085104-e3b1f968fc63/go.mod h1:nf+Komq6fVP4SwmKEaVGxHTyQGKREVlwjQKpvOV39yE=
 github.com/Yawning/poly1305 v0.0.0-20151107134637-dfc796fe731c/go.mod h1:CkwFWTKoa4/jtX6RLTogyqTlMn4898oEkv6j2Ai50+I=
 github.com/dchest/siphash v1.2.1/go.mod h1:q+IRvb2gOSrUnYoPqHiyHXS0FOBBOdl6tONBlVnOnt4=
+github.com/gofrs/uuid v3.2.0+incompatible h1:y12jRkkFxsd7GpqdSZ+/KCs/fJbqpEXSGd4+jfEaewE=
+github.com/gofrs/uuid v3.2.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
 github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e h1:9MlwzLdW7QSDrhDjFlsEYmxpFyIoXmYRon3dt0io31k=
 github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e/go.mod h1:7rIyQOR62GCctdiQpZ/zOJlFyk6y+94wXzv6RNZgaR4=
 github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1/go.mod h1:pD8RvIylQ358TN4wwqatJ8rNavkEINozVn9DtGI3dfQ=
