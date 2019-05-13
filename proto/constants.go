@@ -24,7 +24,7 @@ const (
 	PacketEnterProfile       = 0x0100000F
 	PacketBye                = 0x01000010
 	PacketMachineInfo        = 0x01000011
-	PacketUnknown            = 0x01000014
+	PacketScoreBoardV2       = 0x01000014
 	PacketLoginV2            = 0x01000015
 	PacketKeepAlive          = 0x03000000
 )
@@ -47,6 +47,7 @@ var packetTypeToName = map[uint32]string{
 	PacketMachineInfo:        "Machine Info",
 	PacketLoginV2:            "Login V2",
 	PacketKeepAlive:          "Keep Alive",
+	PacketScoreBoardV2:       "ScoreBoard V2",
 }
 
 func GetPacketName(t uint32) string {

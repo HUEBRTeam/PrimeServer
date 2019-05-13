@@ -88,6 +88,9 @@ func handlePacket(cs *PrimeServer.ClientSession, packet []byte) {
 	case *proto.ScoreBoardPacket:
 		handleScoreBoardPacket(l, cs.Conn, *v)
 
+	case *proto.ScoreBoardPacket2:
+		handleScoreBoardV2Packet(l, cs.Conn, *v)
+
 	case *proto.RequestLevelUpInfoPacket:
 		handleRequestLevelupInfo(l, cs.Conn, *v)
 

@@ -45,6 +45,11 @@ type KeepAlivePacket struct {
 	PacketTrail uint32
 }
 
+type UnknownPacket0 struct {
+	PacketHead uint32 // 0x2c
+	PacketType uint32 // 0x1000014
+}
+
 type MachineInfoPacket struct {
 	PacketHead     uint32        //    0x00 0x0000001
 	PacketType     uint32        //    0x04 0x1000011
@@ -150,6 +155,76 @@ type ScoreBoardPacket struct {
 	GameVersion PIUString12 //    0x64
 	MachineID   uint32      //    0xFFFFFF
 	ProfileID   uint32      //   0xB21
+}
+
+type ScoreBoardPacket2 struct {
+	PacketHead  uint32      //    0x00 0x0000001
+	PacketType  uint32      //    0x04 0x1000014
+	SongID      uint32      //    0x08
+	ChartLevel  uint16      //    0x0C
+	Type        uint8       //    0x0E
+	Flag        uint8       //    0x0F
+	Score       uint32      //    0x10
+	RealScore0  uint32      //    0x14
+	Unk0        [16]uint8   //    0x18
+	RealScore1  uint32      //    Same as SongScore0, dafuq?
+	Grade       uint32      //    0x2C
+	Kcal        float32     //    0x30
+	Perfect     uint32      //    0x34
+	Great       uint32      //    0x38
+	Good        uint32      //    0x3c
+	Bad         uint32      //    0x40
+	Miss        uint32      //    0x44
+	MaxCombo    uint32      //    0x48
+	EXP         uint16      //    0x4c
+	PP          uint16      //    0x4e
+	RunningStep uint16      //    0x50
+	Unk2        uint16      //    0x52
+	Unk3        uint32      //    0x54
+	Unk4        uint32      //    0x58
+	Unk5        uint32      //    0x5c // Contains scroll speed, 0x14 for 5x and 0x0C for 3x
+	RushSpeed   float32     //    0x60
+	GameVersion PIUString12 //    0x64
+	MachineID   uint32      //    0xFFFFFF
+	ProfileID   uint32      //   0xB21
+	Unk6        uint32
+	Unk7        uint32
+}
+
+func (p *ScoreBoardPacket2) String() string {
+	s := "ScoreBoard V2: \n"
+
+	s += fmt.Sprintf("\tSongID: %d (%x)\n", p.SongID, p.SongID)
+	s += fmt.Sprintf("\tChart Level: %d (%x)\n", p.ChartLevel, p.ChartLevel)
+	s += fmt.Sprintf("\tType: %d (%x)\n", p.Type, p.Type)
+	s += fmt.Sprintf("\tFlag: %d (%x)\n", p.Flag, p.Flag)
+	s += fmt.Sprintf("\tScore: %d\n", p.Score)
+	s += fmt.Sprintf("\tRealScore0: %d\n", p.RealScore0)
+	s += fmt.Sprintf("\tUnk0: %d (%x)\n", p.Unk0, p.Unk0)
+	s += fmt.Sprintf("\tRealScore1: %d\n", p.RealScore1)
+	s += fmt.Sprintf("\tGrade: %d (%x)\n", p.Grade, p.Grade)
+	s += fmt.Sprintf("\tKcal: %f\n", p.Kcal)
+	s += fmt.Sprintf("\tPerfect: %d\n", p.Perfect)
+	s += fmt.Sprintf("\tGreat: %d\n", p.Great)
+	s += fmt.Sprintf("\tGood: %d\n", p.Good)
+	s += fmt.Sprintf("\tBad: %d\n", p.Bad)
+	s += fmt.Sprintf("\tMiss: %d\n", p.Miss)
+	s += fmt.Sprintf("\tMaxCombo: %d\n", p.MaxCombo)
+	s += fmt.Sprintf("\tEXP: %d\n", p.EXP)
+	s += fmt.Sprintf("\tPP: %d\n", p.PP)
+	s += fmt.Sprintf("\tRunningStep: %d\n", p.RunningStep)
+	s += fmt.Sprintf("\tUnk2: %d (%x)\n", p.Unk2, p.Unk2)
+	s += fmt.Sprintf("\tUnk3: %d (%x)\n", p.Unk3, p.Unk3)
+	s += fmt.Sprintf("\tUnk4: %d (%x)\n", p.Unk4, p.Unk4)
+	s += fmt.Sprintf("\tUnk5: %d (%x)\n", p.Unk5, p.Unk5)
+	s += fmt.Sprintf("\tRushSpeed: %f\n", p.RushSpeed)
+	s += fmt.Sprintf("\tGameVersion: %s\n", p.GameVersion.String())
+	s += fmt.Sprintf("\tMachineID: %d (%x)\n", p.MachineID, p.MachineID)
+	s += fmt.Sprintf("\tProfileID: %d (%x)\n", p.ProfileID, p.ProfileID)
+	s += fmt.Sprintf("\tUnk6: %d (%x)\n", p.Unk6, p.Unk6)
+	s += fmt.Sprintf("\tUnk7: %d (%x)\n", p.Unk7, p.Unk7)
+
+	return s
 }
 
 type LoginPacket struct {
@@ -280,12 +355,13 @@ var RankModePacketLength = int(binary.Size(RankModePacket{}))
 var RequestRankModePacketLength = int(binary.Size(RequestRankModePacket{}))
 var LoginPacketV2Length = int(binary.Size(LoginPacketV2{}))
 var KeepAlivePacketLength = int(binary.Size(KeepAlivePacket{}))
+var ScoreBoardPacket2Length = int(binary.Size(ScoreBoardPacket2{}))
 
 var BiggestPacket = 0
 
 func init() {
 
-	fmt.Println(ProfilePacketLength)
+	fmt.Println(ScoreBoardPacket2Length)
 
 	packetLens := []int{
 		ACKPacketLength, MachineInfoPacketLength, MachineInfoPacketLength,
@@ -293,7 +369,7 @@ func init() {
 		LevelUpInfoPacketLength, GameOverPacketLength, WorldBestPacketLength,
 		ProfileBusyPacketLength, ByePacketLength, EnterProfilePacketLength,
 		RequestWorldBestPacketLength, RankModePacketLength, RequestRankModePacketLength,
-		LoginPacketV2Length, KeepAlivePacketLength,
+		LoginPacketV2Length, KeepAlivePacketLength, ScoreBoardPacket2Length,
 	}
 
 	for _, v := range packetLens {

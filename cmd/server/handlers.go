@@ -40,7 +40,7 @@ func handleEnterProfilePacket(l *slog.Instance, conn net.Conn, v proto.EnterProf
 }
 
 func handleMachineInfoPacket(l *slog.Instance, conn net.Conn, v proto.MachineInfoPacket) {
-	l.Debug(v)
+	l.Debug(v.String())
 	PrimeServer.SendACK(conn)
 }
 
@@ -64,6 +64,15 @@ func handleScoreBoardPacket(l *slog.Instance, conn net.Conn, v proto.ScoreBoardP
 	profileManager.KeepAlive(v.ProfileID)
 	profileManager.PutScoreBoard(v)
 	l.Info("User %s played a song", nick)
+	PrimeServer.SendACK(conn)
+}
+
+func handleScoreBoardV2Packet(l *slog.Instance, conn net.Conn, v proto.ScoreBoardPacket2) {
+	nick := profileManager.GetProfileNickname(v.ProfileID)
+	profileManager.KeepAlive(v.ProfileID)
+	profileManager.PutScoreBoard2(v)
+	l.Info("User %s played a song", nick)
+	l.Info("%s", v.String())
 	PrimeServer.SendACK(conn)
 }
 

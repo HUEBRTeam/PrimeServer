@@ -179,3 +179,30 @@ func (pm *ProfileManager) PutScoreBoard(sb proto.ScoreBoardPacket) {
 		}
 	}
 }
+
+func (pm *ProfileManager) PutScoreBoard2(sb proto.ScoreBoardPacket2) {
+	pm.mtx.Lock()
+	defer pm.mtx.Unlock()
+
+	accessCode, ok := pm.profileIdToAccessCode[sb.ProfileID]
+
+	if !ok {
+		return
+	}
+
+	v, ok := pm.loadedProfiles[accessCode]
+	if ok {
+		p := v.Profile
+
+		p.EXP += uint64(sb.EXP)
+		p.PP += uint64(sb.PP)
+		p.RunningStep += uint64(sb.RunningStep)
+		p.Kcal += sb.Kcal
+
+		v.Profile = p
+		err := pm.sb.SaveProfile(p)
+		if err != nil {
+			log.Error("Error saving %s profile: %s", p.Nickname, err)
+		}
+	}
+}

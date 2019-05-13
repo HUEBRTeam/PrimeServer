@@ -134,6 +134,12 @@ func (p *KeepAlivePacket) FromBinary(data []byte) error {
 	}
 	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
 }
+func (p *ScoreBoardPacket2) FromBinary(data []byte) error {
+	if len(data) != ScoreBoardPacket2Length {
+		return fmt.Errorf("(%s) expected payload to have %d bytes got %d instead", p.GetName(), ScoreBoardPacket2Length, len(data))
+	}
+	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
+}
 
 // endregion
 // region ToBinary
@@ -251,6 +257,12 @@ func (p *KeepAlivePacket) ToBinary() []byte {
 	return b.Bytes()
 }
 
+func (p *ScoreBoardPacket2) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
 // endregion
 // region GetType
 func (p *ACKPacket) GetType() uint32 {
@@ -318,6 +330,10 @@ func (p *RequestRankModePacket) GetType() uint32 {
 }
 
 func (p *KeepAlivePacket) GetType() uint32 {
+	return PacketKeepAlive
+}
+
+func (p *ScoreBoardPacket2) GetType() uint32 {
 	return PacketKeepAlive
 }
 
@@ -391,6 +407,10 @@ func (p *KeepAlivePacket) GetName() string {
 	return GetPacketName(p.GetType())
 }
 
+func (p *ScoreBoardPacket2) GetName() string {
+	return GetPacketName(p.GetType())
+}
+
 // endregion
 
 func DecodePacket(data []byte) (GenericPacket, error) {
@@ -432,6 +452,8 @@ func DecodePacket(data []byte) (GenericPacket, error) {
 		gp = &LoginPacketV2{}
 	case PacketKeepAlive:
 		gp = &KeepAlivePacket{}
+	case PacketScoreBoardV2:
+		gp = &ScoreBoardPacket2{}
 	default:
 		_ = ioutil.WriteFile(fmt.Sprintf("%08x.bin", packetType), data, 0777)
 		return nil, fmt.Errorf("no such packet type %08x", packetType)
