@@ -82,16 +82,21 @@ func (db *DiskBackend) CreateProfile(name string) (profile proto.ProfilePacket, 
 		return
 	}
 
-	err = db.SaveProfile(profile)
+	err = db.saveProfile(profile)
 
 	return
+}
+
+func (db *DiskBackend) saveProfile(profile proto.ProfilePacket) error {
+
+	accessCode := profile.AccessCode.String()
+
+	return ioutil.WriteFile(db.getProfilePath(accessCode), profile.ToBinary(), 0770)
 }
 
 func (db *DiskBackend) SaveProfile(profile proto.ProfilePacket) error {
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
 
-	accessCode := profile.AccessCode.String()
-
-	return ioutil.WriteFile(db.getProfilePath(accessCode), profile.ToBinary(), 0770)
+	return db.saveProfile(profile)
 }
