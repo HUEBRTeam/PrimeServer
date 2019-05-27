@@ -2,3 +2,4 @@
 cmd/server/server
 cmd/server/profiles
 cmd/server/prime.bin
+cmd/gameEditor/piu*
