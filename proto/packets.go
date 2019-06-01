@@ -46,8 +46,13 @@ type KeepAlivePacket struct {
 }
 
 type UnknownPacket0 struct {
-	PacketHead uint32 // 0x2c
-	PacketType uint32 // 0x1000014
+	PacketHead uint32 // 0x0D
+	PacketType uint32 // 0x100001C
+	Trailing   uint32
+}
+
+type UnknownPacket1 struct {
+	SimplePacket
 }
 
 type MachineInfoPacket struct {
@@ -356,6 +361,8 @@ var RequestRankModePacketLength = int(binary.Size(RequestRankModePacket{}))
 var LoginPacketV2Length = int(binary.Size(LoginPacketV2{}))
 var KeepAlivePacketLength = int(binary.Size(KeepAlivePacket{}))
 var ScoreBoardPacket2Length = int(binary.Size(ScoreBoardPacket2{}))
+var UnknownPacket0Length = int(binary.Size(UnknownPacket0{}))
+var UnknownPacket1Length = int(binary.Size(UnknownPacket1{}))
 
 var BiggestPacket = 0
 
@@ -370,6 +377,7 @@ func init() {
 		ProfileBusyPacketLength, ByePacketLength, EnterProfilePacketLength,
 		RequestWorldBestPacketLength, RankModePacketLength, RequestRankModePacketLength,
 		LoginPacketV2Length, KeepAlivePacketLength, ScoreBoardPacket2Length,
+		UnknownPacket0Length, UnknownPacket1Length,
 	}
 
 	for _, v := range packetLens {

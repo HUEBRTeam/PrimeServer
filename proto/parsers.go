@@ -141,6 +141,20 @@ func (p *ScoreBoardPacket2) FromBinary(data []byte) error {
 	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
 }
 
+func (p *UnknownPacket0) FromBinary(data []byte) error {
+	if len(data) != UnknownPacket0Length {
+		return fmt.Errorf("(%s) expected payload to have %d bytes got %d instead", p.GetName(), UnknownPacket0Length, len(data))
+	}
+	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
+}
+
+func (p *UnknownPacket1) FromBinary(data []byte) error {
+	if len(data) != UnknownPacket1Length {
+		return fmt.Errorf("(%s) expected payload to have %d bytes got %d instead", p.GetName(), UnknownPacket1Length, len(data))
+	}
+	return binary.Read(bytes.NewReader(data), binary.LittleEndian, p)
+}
+
 // endregion
 // region ToBinary
 func (p *ACKPacket) ToBinary() []byte {
@@ -263,6 +277,17 @@ func (p *ScoreBoardPacket2) ToBinary() []byte {
 	return b.Bytes()
 }
 
+func (p *UnknownPacket0) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+func (p *UnknownPacket1) ToBinary() []byte {
+	b := bytes.NewBuffer(nil)
+	binary.Write(b, binary.LittleEndian, p)
+	return b.Bytes()
+}
+
 // endregion
 // region GetType
 func (p *ACKPacket) GetType() uint32 {
@@ -335,6 +360,14 @@ func (p *KeepAlivePacket) GetType() uint32 {
 
 func (p *ScoreBoardPacket2) GetType() uint32 {
 	return PacketKeepAlive
+}
+
+func (p *UnknownPacket0) GetType() uint32 {
+	return PacketUnknown0
+}
+
+func (p *UnknownPacket1) GetType() uint32 {
+	return PacketUnknown1
 }
 
 // endregion
@@ -411,6 +444,13 @@ func (p *ScoreBoardPacket2) GetName() string {
 	return GetPacketName(p.GetType())
 }
 
+func (p *UnknownPacket0) GetName() string {
+	return GetPacketName(p.GetType())
+}
+func (p *UnknownPacket1) GetName() string {
+	return GetPacketName(p.GetType())
+}
+
 // endregion
 
 func DecodePacket(data []byte) (GenericPacket, error) {
@@ -454,6 +494,10 @@ func DecodePacket(data []byte) (GenericPacket, error) {
 		gp = &KeepAlivePacket{}
 	case PacketScoreBoardV2:
 		gp = &ScoreBoardPacket2{}
+	case PacketUnknown0:
+		gp = &UnknownPacket0{}
+	case PacketUnknown1:
+		gp = &UnknownPacket1{}
 	default:
 		_ = ioutil.WriteFile(fmt.Sprintf("%08x.bin", packetType), data, 0777)
 		return nil, fmt.Errorf("no such packet type %08x", packetType)
