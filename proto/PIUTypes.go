@@ -1,6 +1,9 @@
 package proto
 
-import "bytes"
+import (
+	"bytes"
+	"encoding/json"
+)
 
 type GenericPacket interface {
 	FromBinary([]byte) error
@@ -54,6 +57,82 @@ func MakePIUMacAddress(data string) PIUMacAddress {
 func MakePIUNickName(nickname string) PIUNickname {
 	return PIUNickname(MakePIUString12(nickname))
 }
+
+// region JSON Handlers
+
+func (n PIUString12) MarshalJSON() ([]byte, error) {
+	return json.Marshal(n.String())
+}
+
+func (n PIUString12) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, &n); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (n PIUNickname) MarshalJSON() ([]byte, error) {
+	return json.Marshal(n.String())
+}
+
+func (n PIUNickname) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, &n); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (n PIUString16) MarshalJSON() ([]byte, error) {
+	return json.Marshal(n.String())
+}
+
+func (n PIUString16) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, &n); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (n PIUMacAddress) MarshalJSON() ([]byte, error) {
+	return json.Marshal(n.String())
+}
+
+func (n PIUMacAddress) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, &n); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (n PIUString32) MarshalJSON() ([]byte, error) {
+	return json.Marshal(n.String())
+}
+
+func (n PIUString32) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, &n); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (n PIUString128) MarshalJSON() ([]byte, error) {
+	return json.Marshal(n.String())
+}
+
+func (n PIUString128) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, &n); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// endregion
 
 // region To String Handlers
 func (n PIUString12) String() string {

@@ -447,6 +447,7 @@ func (p *ScoreBoardPacket2) GetName() string {
 func (p *UnknownPacket0) GetName() string {
 	return GetPacketName(p.GetType())
 }
+
 func (p *UnknownPacket1) GetName() string {
 	return GetPacketName(p.GetType())
 }

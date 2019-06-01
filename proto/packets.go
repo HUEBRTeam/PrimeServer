@@ -7,13 +7,13 @@ import (
 )
 
 type SimplePacket struct {
-	PacketHead uint32
-	PacketType uint32
+	PacketHead uint32 `json:"-"`
+	PacketType uint32 `json:"-"`
 }
 
 type ACKPacket struct {
 	SimplePacket
-	PacketTrail uint32
+	PacketTrail uint32 `json:"-"`
 }
 
 type ProfileBusyPacket struct {
@@ -42,13 +42,13 @@ type RequestRankModePacket struct {
 
 type KeepAlivePacket struct {
 	SimplePacket
-	PacketTrail uint32
+	PacketTrail uint32 `json:"-"`
 }
 
 type UnknownPacket0 struct {
-	PacketHead uint32 // 0x0D
-	PacketType uint32 // 0x100001C
-	Trailing   uint32
+	PacketHead uint32 `json:"-"` // 0x0D
+	PacketType uint32 `json:"-"` // 0x100001C
+	Trailing   uint32 `json:"-"`
 }
 
 type UnknownPacket1 struct {
@@ -70,23 +70,23 @@ type MachineInfoPacket struct {
 	USBMode        PIUString128  //    Mode 1.0 / Mode 1.1 / Mode 2.0
 	Memory         uint32        //    0x254
 	ConfigMagic    uint32        //    0x258
-	Unk3           uint32        //    0x25c
-	Unk4           uint32        //    0x260
-	Unk5           uint32        //    0x264
-	Unk6           uint32        //    0x268
-	Unk7           uint32        //    0x26c
-	Unk8           uint32        //    0x270
-	Unk9           uint32        //    0x274
-	Unk10          uint32        //    0x278
-	Unk11          uint32        //    0x27c
-	Unk12          uint32
-	Unk13          uint32
-	Unk14          uint32
-	Unk15          uint32
-	Unk16          uint32
-	Unk17          uint32
-	Unk18          uint32
-	Unk19          [76]uint8
+	Unk3           uint32        `json:"-"` //    0x25c
+	Unk4           uint32        `json:"-"` //    0x260
+	Unk5           uint32        `json:"-"` //    0x264
+	Unk6           uint32        `json:"-"` //    0x268
+	Unk7           uint32        `json:"-"` //    0x26c
+	Unk8           uint32        `json:"-"` //    0x270
+	Unk9           uint32        `json:"-"` //    0x274
+	Unk10          uint32        `json:"-"` //    0x278
+	Unk11          uint32        `json:"-"` //    0x27c
+	Unk12          uint32        `json:"-"`
+	Unk13          uint32        `json:"-"`
+	Unk14          uint32        `json:"-"`
+	Unk15          uint32        `json:"-"`
+	Unk16          uint32        `json:"-"`
+	Unk17          uint32        `json:"-"`
+	Unk18          uint32        `json:"-"`
+	Unk19          [76]uint8     `json:"-"`
 	NetworkAddress PIUString16
 }
 
@@ -139,7 +139,7 @@ type ScoreBoardPacket struct {
 	Flag        uint8       //    0x0F
 	Score       uint32      //    0x10
 	RealScore0  uint32      //    0x14
-	Unk0        [16]uint8   //    0x18
+	Unk0        [16]uint8   `json:"-"` //    0x18
 	RealScore1  uint32      //    Same as SongScore0, dafuq?
 	Grade       uint32      //    0x2C
 	Kcal        float32     //    0x30
@@ -152,10 +152,10 @@ type ScoreBoardPacket struct {
 	EXP         uint16      //    0x4c
 	PP          uint16      //    0x4e
 	RunningStep uint16      //    0x50
-	Unk2        uint16      //    0x52
-	Unk3        uint32      //    0x54
-	Unk4        uint32      //    0x58
-	Unk5        uint32      //    0x5c
+	Unk2        uint16      `json:"-"` //    0x52
+	Unk3        uint32      `json:"-"` //    0x54
+	Unk4        uint32      `json:"-"` //    0x58
+	Unk5        uint32      `json:"-"` //    0x5c
 	RushSpeed   float32     //    0x60
 	GameVersion PIUString12 //    0x64
 	MachineID   uint32      //    0xFFFFFF
@@ -171,7 +171,7 @@ type ScoreBoardPacket2 struct {
 	Flag        uint8       //    0x0F
 	Score       uint32      //    0x10
 	RealScore0  uint32      //    0x14
-	Unk0        [16]uint8   //    0x18
+	Unk0        [16]uint8   `json:"-"` //    0x18
 	RealScore1  uint32      //    Same as SongScore0, dafuq?
 	Grade       uint32      //    0x2C
 	Kcal        float32     //    0x30
@@ -184,16 +184,16 @@ type ScoreBoardPacket2 struct {
 	EXP         uint16      //    0x4c
 	PP          uint16      //    0x4e
 	RunningStep uint16      //    0x50
-	Unk2        uint16      //    0x52
-	Unk3        uint32      //    0x54
-	Unk4        uint32      //    0x58
-	Unk5        uint32      //    0x5c // Contains scroll speed, 0x14 for 5x and 0x0C for 3x
+	Unk2        uint16      `json:"-"` //    0x52
+	Unk3        uint32      `json:"-"` //    0x54
+	Unk4        uint32      `json:"-"` //    0x58
+	Unk5        uint32      `json:"-"` //    0x5c // Contains scroll speed, 0x14 for 5x and 0x0C for 3x
 	RushSpeed   float32     //    0x60
 	GameVersion PIUString12 //    0x64
 	MachineID   uint32      //    0xFFFFFF
 	ProfileID   uint32      //   0xB21
-	Unk6        uint32
-	Unk7        uint32
+	Unk6        uint32      `json:"-"`
+	Unk7        uint32      `json:"-"`
 }
 
 func (p *ScoreBoardPacket2) String() string {
@@ -247,23 +247,23 @@ type LoginPacketV2 struct {
 	PlayerID    uint32      //    0x08
 	MachineID   uint32      //    0x0C
 	AccessCode  PIUString32 //  Hex String
-	Unk0        uint32
+	Unk0        uint32      `json:"-"`
 	GameVersion PIUString12
 	PacketTrail uint32
 }
 
 type ProfilePacket struct {
-	PacketHead  uint32      //    0x00 0x0000001
-	PacketType  uint32      //    0x04 0x1000004
+	PacketHead  uint32      `json:"-"` //    0x00 0x0000001
+	PacketType  uint32      `json:"-"` //    0x04 0x1000004
 	PlayerID    uint32      //    0x08
 	AccessCode  PIUString32 //    0x0C
-	Unk0        uint32
+	Unk0        uint32      `json:"-"`
 	Nickname    PIUNickname //    0x30
 	ProfileID   uint32      //    0x10
 	CountryID   uint8       //    0x3C
 	Avatar      uint8       //    0x40
 	Level       uint8       //    0x42
-	Unk1        uint8
+	Unk1        uint8       `json:"-"`
 	EXP         uint64
 	PP          uint64
 	RankSingle  uint64
@@ -272,53 +272,53 @@ type ProfilePacket struct {
 	PlayCount   uint32
 	Kcal        float32
 	Modifiers   uint64
-	Unk2        uint32
+	Unk2        uint32 `json:"-"`
 	RushSpeed   float32
-	Unk3        uint32
+	Unk3        uint32       `json:"-"`
 	Scores      [4384]UScore //    0x88
 }
 
 type UScore struct {
 	SongID       uint32 //    0x00
 	ChartLevel   uint8  //    0x04
-	Unk0         uint8  //    0x05
+	Unk0         uint8  `json:"-"` //    0x05
 	GameDataFlag uint16 //    0x06
 	Score        uint32 //    0x08
 	RealScore    uint32 //   Maybe
-	Unk2         uint32 //    0x10
+	Unk2         uint32 `json:"-"` //    0x10
 }
 
 type RequestLevelUpInfoPacket struct {
-	PacketHead uint32 //    0x00 0x0000001
-	PacketType uint32 //    0x04 0x100000C
-	ProfileID  uint32 //    0x08 0xBD5
+	PacketHead uint32 `json:"-"` //    0x00 0x0000001
+	PacketType uint32 `json:"-"` //    0x04 0x100000C
+	ProfileID  uint32 `json:"-"` //    0x08 0xBD5
 }
 
 type LevelUpInfoPacket struct {
-	PacketHead uint32 //    0x00 0x0000001
-	PacketType uint32 //    0x04 0x100000D
+	PacketHead uint32 `json:"-"` //    0x00 0x0000001
+	PacketType uint32 `json:"-"` //    0x04 0x100000D
 	ProfileID  uint32 //    0x08 0xBD5
 	Level      uint32 //    0x0C
 }
 
 type GameOverPacket struct {
-	PacketHead uint32 //    0x00 0x0000001
-	PacketType uint32 //    0x04 0x1000001
-	Unk0       uint32 //    0x08 0xBD5
+	PacketHead uint32 `json:"-"` //    0x00 0x0000001
+	PacketType uint32 `json:"-"` //    0x04 0x1000001
+	Unk0       uint32 `json:"-"` //    0x08 0xBD5
 }
 
 type WorldBestPacket struct {
-	PacketHead  uint32 //    0x00 0x00000002
-	PacketType  uint32 //    0x04 0x10000009
-	Unk0        uint32 //    0x08 5056
-	Unk1        uint32 //    0x0C 0x0000000F
-	Unk2        uint32 //    0x10 674200
-	Unk3        uint32 //    0x14 0x00000000
-	Unk4        uint32 //    0x18 0x00000000
+	PacketHead  uint32 `json:"-"` //    0x00 0x00000002
+	PacketType  uint32 `json:"-"` //    0x04 0x10000009
+	Unk0        uint32 `json:"-"` //    0x08 5056
+	Unk1        uint32 `json:"-"` //    0x0C 0x0000000F
+	Unk2        uint32 `json:"-"` //    0x10 674200
+	Unk3        uint32 `json:"-"` //    0x14 0x00000000
+	Unk4        uint32 `json:"-"` //    0x18 0x00000000
 	WorldScores [4095]WorldBestScore
-	Unk5        uint32 //    0x?? 0x00000000
-	Unk6        uint32 //    0x?? 0x00000000
-	PacketTrail uint32 //    0x?? 0x00000000
+	Unk5        uint32 `json:"-"` //    0x?? 0x00000000
+	Unk6        uint32 `json:"-"` //    0x?? 0x00000000
+	PacketTrail uint32 `json:"-"` //    0x?? 0x00000000
 }
 
 type WorldBestScore struct {
@@ -326,8 +326,8 @@ type WorldBestScore struct {
 	ChartLevel uint16      //
 	ChartMode  uint16      //
 	Score      uint32      //
-	Unk0       uint32      //
-	Unk1       uint32      //
+	Unk0       uint32      `json:"-"` //
+	Unk1       uint32      `json:"-"` //
 	Nickname   PIUNickname //
 }
 

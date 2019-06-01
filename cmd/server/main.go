@@ -5,6 +5,7 @@ import (
 	"github.com/HUEBRTeam/PrimeServer"
 	"github.com/HUEBRTeam/PrimeServer/ProfileManager"
 	"github.com/HUEBRTeam/PrimeServer/Storage"
+	"github.com/HUEBRTeam/PrimeServer/cmd/server/rest"
 	"github.com/HUEBRTeam/PrimeServer/proto"
 	"github.com/quan-to/slog"
 	"io"
@@ -24,6 +25,11 @@ var profileManager *ProfileManager.ProfileManager
 func main() {
 	sb := Storage.MakeDiskBackend("profiles")
 	profileManager = ProfileManager.MakeProfileManager(sb)
+	rs := rest.MakeRestServer(8090, profileManager)
+
+	go func() {
+		log.Fatal(rs.Listen())
+	}()
 
 	// Listen for incoming connections.
 	l, err := net.Listen(ConnType, ":"+ConnPort)
