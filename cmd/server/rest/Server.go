@@ -113,6 +113,9 @@ func (s *Server) createProfile(w http.ResponseWriter, r *http.Request) {
 func (s *Server) change(w http.ResponseWriter, r *http.Request) {
 	tools.InitHTTPTimer(r)
 
+	var pr CreateStatus
+	pr.Status = "success"
+
 	defer func() {
 		if rec := recover(); rec != nil {
 			tools.CatchAllError(rec, w, r, log)
@@ -125,18 +128,10 @@ func (s *Server) change(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p, err := s.pm.Load(cp.AccessCode, 0)
-
+	err := s.pm.Change(cp.AccessCode, cp.Nickname, cp.CountryID, cp.Avatar, cp.Modifiers)
 	if err != nil {
-		tools.NotFound("AccessCode", fmt.Sprintf("No user with access code %s has been found", cp.AccessCode), w, r, log)
+		pr.Status = "failure"
 	}
-
-	p.CountryID = uint8(cp.CountryID)
-	p.Avatar = uint8(cp.Avatar)
-	p.Modifiers = uint64(cp.Modifiers)
-
-	var pr CreateStatus
-	pr.Status = "success"
 
 	b, _ := json.Marshal(pr)
 	w.Header().Set("Content-Type", tools.MimeJSON)

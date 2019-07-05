@@ -62,7 +62,7 @@ func (db *DiskBackend) profileExists(accessCode string) bool {
 
 func (db *DiskBackend) genAccessCode() string {
 	u, _ := uuid.NewV4()
-	id := strings.ReplaceAll(u.String(), "-", "")
+	id := strings.Replace(u.String(), "-", "", -1)
 
 	if db.profileExists(id) {
 		return db.genAccessCode() // Try again

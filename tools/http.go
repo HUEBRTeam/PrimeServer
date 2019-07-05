@@ -3,15 +3,16 @@ package tools
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/HUEBRTeam/PrimeServer/models"
-	"github.com/logrusorgru/aurora"
-	"github.com/quan-to/slog"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/HUEBRTeam/PrimeServer/models"
+	"github.com/logrusorgru/aurora"
+	"github.com/quan-to/slog"
 )
 
 const httpInternalTimestamp = "___HTTP_INTERNAL_TIMESTAMP___"
@@ -114,17 +115,17 @@ func LogExit(slog *slog.Instance, r *http.Request, statusCode int, bodyLength in
 	case 200:
 		statusCodeStr = aurora.Green(statusCodeStr).Inverse().Bold()
 	default:
-		statusCodeStr = aurora.Gray(statusCodeStr).Bold()
+		statusCodeStr = aurora.Gray(12-1, statusCodeStr).Bold()
 	}
 
 	host, _, _ := net.SplitHostPort(r.RemoteAddr)
 
-	remote := aurora.Gray(host)
+	remote := aurora.Gray(12-1, host)
 
 	if ts != 0 {
-		slog.LogNoFormat("%s (%8.2f ms) {%8d bytes} %-4s %s from %s", statusCodeStr, ts, bodyLength, method, aurora.Gray(r.URL.Path), remote)
+		slog.LogNoFormat("%s (%8.2f ms) {%8d bytes} %-4s %s from %s", statusCodeStr, ts, bodyLength, method, aurora.Gray(12-1, r.URL.Path), remote)
 	} else {
-		slog.LogNoFormat("%s {%8d bytes}          %-4s %s from %s", statusCodeStr, bodyLength, method, aurora.Gray(r.URL.Path), remote)
+		slog.LogNoFormat("%s {%8d bytes}          %-4s %s from %s", statusCodeStr, bodyLength, method, aurora.Gray(12-1, r.URL.Path), remote)
 	}
 }
 
