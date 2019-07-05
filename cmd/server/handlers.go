@@ -45,7 +45,7 @@ func handleMachineInfoPacket(l *slog.Instance, conn net.Conn, v proto.MachineInf
 }
 
 func handleRequestWorldBestPacket(l *slog.Instance, conn net.Conn, v proto.RequestWorldBestPacket) {
-	wb := proto.MakeWorldBestPacket(nil)
+	wb := proto.MakeWorldBestPacket(nil) // replace nil with the actual world best scores for all songs (4095 songs???)
 	PrimeServer.SendPacket(conn, wb.ToBinary())
 }
 

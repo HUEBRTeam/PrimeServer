@@ -102,14 +102,14 @@ func MakeRankModePacket(ranks []SongRank) *RankModePacket {
 	}
 }
 
-func MakeProfilePacket(name, accessCode string) *ProfilePacket {
+func MakeProfilePacket(name string, country int, avatar int, modifiers int, accessCode string) *ProfilePacket {
 	return &ProfilePacket{
 		PacketHead:  0x0000001,
 		PacketType:  PacketProfile,
 		AccessCode:  MakePIUString32(accessCode),
 		Nickname:    MakePIUNickName(name),
-		CountryID:   0,
-		Avatar:      0,
+		CountryID:   uint8(country),
+		Avatar:      uint8(avatar),
 		Level:       0,
 		EXP:         0,
 		PP:          0,
@@ -117,7 +117,7 @@ func MakeProfilePacket(name, accessCode string) *ProfilePacket {
 		RankDouble:  0,
 		PlayCount:   0,
 		Kcal:        0,
-		Modifiers:   0,
+		Modifiers:   uint64(modifiers),
 		RunningStep: 0,
 	}
 }

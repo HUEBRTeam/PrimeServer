@@ -2,13 +2,14 @@ package Storage
 
 import (
 	"fmt"
-	"github.com/HUEBRTeam/PrimeServer/proto"
-	"github.com/gofrs/uuid"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 	"sync"
+
+	"github.com/HUEBRTeam/PrimeServer/proto"
+	"github.com/gofrs/uuid"
 )
 
 type DiskBackend struct {
@@ -70,13 +71,13 @@ func (db *DiskBackend) genAccessCode() string {
 	return id
 }
 
-func (db *DiskBackend) CreateProfile(name string) (profile proto.ProfilePacket, err error) {
+func (db *DiskBackend) CreateProfile(name string, country int, avatar int, modifiers int) (profile proto.ProfilePacket, err error) {
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
 
 	accessCode := db.genAccessCode()
 
-	err = profile.FromBinary(proto.MakeProfilePacket(name, accessCode).ToBinary())
+	err = profile.FromBinary(proto.MakeProfilePacket(name, country, avatar, modifiers, accessCode).ToBinary())
 
 	if err != nil {
 		return

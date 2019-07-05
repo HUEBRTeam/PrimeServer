@@ -28,8 +28,8 @@ func MakeProfileManager(sb ProfileStorageBackend) *ProfileManager {
 	}
 }
 
-func (pm *ProfileManager) Create(name string) (string, error) {
-	p, err := pm.sb.CreateProfile(name)
+func (pm *ProfileManager) Create(name string, country int, avatar int, modifiers int) (string, error) {
+	p, err := pm.sb.CreateProfile(name, country, avatar, modifiers)
 
 	if err != nil {
 		return "", err
