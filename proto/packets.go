@@ -272,9 +272,9 @@ type ProfilePacket struct {
 	PlayCount   uint32
 	Kcal        float32
 	Modifiers   uint64
-	Unk2        uint32 `json:"-"`
+	SpeedMod    uint32
 	RushSpeed   float32
-	Unk3        uint32       `json:"-"`
+	Unk2        uint32       `json:"-"`
 	Scores      [4384]UScore //    0x88
 }
 

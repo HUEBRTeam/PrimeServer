@@ -5,6 +5,7 @@ type CreateProfileRequest struct {
 	CountryID int
 	Avatar    int
 	Modifiers int
+	SpeedMod  int
 }
 
 type CreateProfileResponse struct {
@@ -18,6 +19,7 @@ type CreateProfileChange struct {
 	CountryID  int
 	Avatar     int
 	Modifiers  int
+	SpeedMod   int
 }
 
 type CreateStatus struct {

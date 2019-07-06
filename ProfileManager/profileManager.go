@@ -1,4 +1,3 @@
-
 package ProfileManager
 
 import (
@@ -30,8 +29,8 @@ func MakeProfileManager(sb ProfileStorageBackend) *ProfileManager {
 	}
 }
 
-func (pm *ProfileManager) Create(name string, country int, avatar int, modifiers int) (string, error) {
-	p, err := pm.sb.CreateProfile(name, country, avatar, modifiers)
+func (pm *ProfileManager) Create(name string, country int, avatar int, modifiers int, speedmod int) (string, error) {
+	p, err := pm.sb.CreateProfile(name, country, avatar, modifiers, speedmod)
 
 	if err != nil {
 		return "", err
@@ -40,7 +39,7 @@ func (pm *ProfileManager) Create(name string, country int, avatar int, modifiers
 	return p.AccessCode.String(), nil
 }
 
-func (pm *ProfileManager) Change(accessCode string, name string, country int, avatar int, modifiers int) error {
+func (pm *ProfileManager) Change(accessCode string, name string, country int, avatar int, modifiers int, speedmod int) error {
 	pm.mtx.Lock()
 	defer pm.mtx.Unlock()
 
@@ -54,6 +53,7 @@ func (pm *ProfileManager) Change(accessCode string, name string, country int, av
 	profile.CountryID = uint8(country)
 	profile.Avatar = uint8(avatar)
 	profile.Modifiers = uint64(modifiers)
+	profile.SpeedMod = uint32(speedmod)
 
 	err = pm.sb.SaveProfile(profile)
 	if err != nil {

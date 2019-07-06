@@ -89,7 +89,7 @@ func (s *Server) createProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessCode, err := s.pm.Create(cp.Name, cp.CountryID, cp.Avatar, cp.Modifiers)
+	accessCode, err := s.pm.Create(cp.Name, cp.CountryID, cp.Avatar, cp.Modifiers, cp.SpeedMod)
 
 	if err != nil {
 		tools.InternalServerError("There was an error processing your request", map[string]interface{}{
@@ -128,7 +128,7 @@ func (s *Server) change(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := s.pm.Change(cp.AccessCode, cp.Nickname, cp.CountryID, cp.Avatar, cp.Modifiers)
+	err := s.pm.Change(cp.AccessCode, cp.Nickname, cp.CountryID, cp.Avatar, cp.Modifiers, cp.SpeedMod)
 	if err != nil {
 		pr.Status = "failure"
 	}
