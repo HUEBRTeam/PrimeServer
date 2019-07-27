@@ -60,6 +60,14 @@ func (db *DiskBackend) profileExists(accessCode string) bool {
 	return false
 }
 
+func (db *DiskBackend) listProfiles() []os.FileInfo { // returns all files in profiles folder
+	files, err := ioutil.ReadDir(db.folder)
+	if err != nil {
+		return []os.FileInfo{}
+	}
+	return files
+}
+
 func (db *DiskBackend) genAccessCode() string {
 	u, _ := uuid.NewV4()
 	id := strings.Replace(u.String(), "-", "", -1)
