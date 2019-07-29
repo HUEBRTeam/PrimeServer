@@ -2,9 +2,9 @@ package main
 
 import (
 	"net"
-	"strings"
 
 	"github.com/HUEBRTeam/PrimeServer"
+	"github.com/HUEBRTeam/PrimeServer/cmd/server/network"
 	"github.com/HUEBRTeam/PrimeServer/proto"
 	"github.com/quan-to/slog"
 )
@@ -23,11 +23,14 @@ func handleLoginPacket(l *slog.Instance, conn net.Conn, v proto.LoginPacket) {
 func handleLoginPacketV2(l *slog.Instance, conn net.Conn, v proto.LoginPacketV2) {
 	ac := v.AccessCode.String()
 	if config.Online {
-		prof, err := network.RetrieveProfile(config.APIKey, strings.Replace(f.Name(), ".primeprofile", ""), profileManager)
+		prof, err := network.RetrieveProfile(config.APIKey, ac, config.ServerAddress, profileManager)
 		if err != nil {
-			log.Error("Error: could not retrieve profile for access code %s, skipping... %s", strings.Replace(f.Name(), ".primeprofile", ""), err.Error())
+			log.Error("Error: could not retrieve profile for access code %s, skipping... %s", ac, err.Error())
 		}
-		profileManager.SaveProfile(prof)
+		err = profileManager.GetStorageBackend().SaveProfile(prof)
+		if err != nil {
+			log.Error("Error: could not save profile %s", err.Error())
+		}
 		/*if md5check { // probably only do this for score submissions
 			calculate packets md5
 			try connecting with apikey to retrieve md5 of world best and rank mode
@@ -36,12 +39,22 @@ func handleLoginPacketV2(l *slog.Instance, conn net.Conn, v proto.LoginPacketV2)
 		wb, err := network.RetrieveWorldBest(config.APIKey, config.ServerAddress, config.ScoreType)
 		if err != nil {
 			log.Error("Error: could not retrieve World Best packet %s", err.Error())
+		} else {
+			err = profileManager.GetStorageBackend().SaveWorldBest(wb)
+			if err != nil {
+				log.Error("Error: could not save World Best packet %s", err.Error())
+			}
 		}
 		rank, err := network.RetrieveRankMode(config.APIKey, config.ServerAddress, config.ScoreType)
 		if err != nil {
 			log.Error("Error: could not retrieve Rank Mode packet %s", err.Error())
+		} else {
+			err = profileManager.GetStorageBackend().SaveRankMode(rank)
+			if err != nil {
+				log.Error("Error: could not save Rank Mode packet %s", err.Error())
+			}
 		}
-		// save worldbest and rankmode
+
 	}
 	p, err := profileManager.Load(ac, v.PlayerID)
 	if err != nil {
@@ -65,7 +78,7 @@ func handleEnterProfilePacket(l *slog.Instance, conn net.Conn, v proto.EnterProf
 func handleMachineInfoPacket(l *slog.Instance, conn net.Conn, v proto.MachineInfoPacket) {
 	l.Debug(v.String())
 	if config.Online {
-		err := network.SubmitMachineID(config.APIKey, config.ServerAddress, v)
+		err := network.SubmitMachineInfo(config.APIKey, config.ServerAddress, v)
 		if err != nil {
 			log.Error("Error: could not send Machine ID packet %s", err.Error())
 		}
@@ -74,14 +87,18 @@ func handleMachineInfoPacket(l *slog.Instance, conn net.Conn, v proto.MachineInf
 }
 
 func handleRequestWorldBestPacket(l *slog.Instance, conn net.Conn, v proto.RequestWorldBestPacket) {
-	// replace with rm := x.GetWorldBestPacket() which loads local file and calls makeworldbestpacket?
-	wb := proto.MakeWorldBestPacket(nil)
+	wb, err := profileManager.GetStorageBackend().GetWorldBest()
+	if err != nil {
+		log.Error("Error: could not get World Best packet %s", err.Error())
+	}
 	PrimeServer.SendPacket(conn, wb.ToBinary())
 }
 
 func handleRequestRankModePacket(l *slog.Instance, conn net.Conn, v proto.RequestRankModePacket) {
-	// replace with rm := x.GetRankModePacket() which loads local file and calls makeworldbestpacket?
-	rm := proto.MakeRankModePacket(nil)
+	rm, err := profileManager.GetStorageBackend().GetRankMode()
+	if err != nil {
+		log.Error("Error: could not get Rank Mode packet %s", err.Error())
+	}
 	PrimeServer.SendPacket(conn, rm.ToBinary())
 }
 
@@ -109,7 +126,11 @@ func handleScoreBoardV2Packet(l *slog.Instance, conn net.Conn, v proto.ScoreBoar
 		if err != nil {
 			log.Error("Error: could not send Score packet %s", err.Error())
 		}
-		err := network.SubmitProfile(config.APIKey, config.ServerAddress, profileManager.GetProfile(profileManager.profileIdToAccessCode[v.ProfileID]))
+		p, err := profileManager.GetStorageBackend().GetProfile(profileManager.ProfileIDToAccessCode(v.ProfileID))
+		if err != nil {
+			log.Error("Error: could not get profile %s", err.Error())
+		}
+		err = network.SubmitProfile(config.APIKey, config.ServerAddress, p)
 		if err != nil {
 			log.Error("Error: could not send Profile packet %s", err.Error())
 		}
@@ -121,14 +142,21 @@ func handleScoreBoardV2Packet(l *slog.Instance, conn net.Conn, v proto.ScoreBoar
 		wb, err := network.RetrieveWorldBest(config.APIKey, config.ServerAddress, config.ScoreType)
 		if err != nil {
 			log.Error("Error: could not retrieve World Best packet %s", err.Error())
+		} else {
+			err = profileManager.GetStorageBackend().SaveWorldBest(wb)
+			if err != nil {
+				log.Error("Error: could not save World Best packet %s", err.Error())
+			}
 		}
 		rank, err := network.RetrieveRankMode(config.APIKey, config.ServerAddress, config.ScoreType)
 		if err != nil {
 			log.Error("Error: could not retrieve Rank Mode packet %s", err.Error())
+		} else {
+			err = profileManager.GetStorageBackend().SaveRankMode(rank)
+			if err != nil {
+				log.Error("Error: could not save Rank Mode packet %s", err.Error())
+			}
 		}
-	}
-	if err == nil {
-		l.Info("Score successfully submitted.")
 	}
 	PrimeServer.SendACK(conn)
 }

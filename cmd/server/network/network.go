@@ -2,16 +2,18 @@ package network
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
+	"reflect"
 
 	"github.com/HUEBRTeam/PrimeServer/ProfileManager"
 	"github.com/HUEBRTeam/PrimeServer/proto"
 )
 
-func RetrieveProfile(apikey string, accesscode string, address string, pm ProfileManager.ProfileManager) (profpacket proto.ProfilePacket, err error) {
+func RetrieveProfile(apikey string, accesscode string, address string, pm *ProfileManager.ProfileManager) (profpacket proto.ProfilePacket, err error) {
 	u, err := url.Parse(address)
 	if err != nil {
 		return
@@ -31,12 +33,15 @@ func RetrieveProfile(apikey string, accesscode string, address string, pm Profil
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	profpacket := pm.GetProfile(accesscode)
+	profpacket, err = pm.GetStorageBackend().GetProfile(accesscode)
+	if err != nil {
+		return
+	}
 	_ = json.Unmarshal(body, &profpacket)
 	return
 }
 
-func RetrieveWorldBest(apikey string, address string, scoretype string) (wbpacket proto.WorldBestPacket, err error) {
+func RetrieveWorldBest(apikey string, address string, scoretype string) (wbpacket *proto.WorldBestPacket, err error) {
 	u, err := url.Parse(address)
 	if err != nil {
 		return
@@ -56,12 +61,12 @@ func RetrieveWorldBest(apikey string, address string, scoretype string) (wbpacke
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	wbpacket := proto.MakeWorldBestPacket([]WorldBestScore{})
+	wbpacket = proto.MakeWorldBestPacket([]proto.WorldBestScore{})
 	_ = json.Unmarshal(body, &wbpacket)
 	return
 }
 
-func RetrieveRankMode(apikey string, address string, scoretype string) (rnkpacket proto.RankModePacket, err error) {
+func RetrieveRankMode(apikey string, address string, scoretype string) (rnkpacket *proto.RankModePacket, err error) {
 	u, err := url.Parse(address)
 	if err != nil {
 		return
@@ -81,7 +86,7 @@ func RetrieveRankMode(apikey string, address string, scoretype string) (rnkpacke
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	wbpacket := proto.MakeRankModePacket([]SongRank{})
+	wbpacket := proto.MakeRankModePacket([]proto.SongRank{})
 	_ = json.Unmarshal(body, &wbpacket)
 	return
 }
@@ -92,22 +97,19 @@ func SubmitScore(apikey string, address string, score proto.ScoreBoardPacket2) (
 		return
 	}
 	u.Path = path.Join(u.Path, "submit")
-	req, err := http.NewRequest("POST", u.String(), nil)
-	if err != nil {
-		return
+	values := url.Values{}
+	val := reflect.ValueOf(score).Elem()
+	t := val.Type()
+	for i := 0; i < val.NumField(); i++ { // iterate through struct fields and convert everything to strings
+		values.Set(t.Field(i).Name, fmt.Sprint(val.Field(i)))
 	}
-	query := req.URL.Query()
-	query.Add("api_key", apikey)
-	query.Add("access_code", accesscode)
-	req.URL.RawQuery = query.Encode()
-	resp, err := http.Get(req.URL.String())
+	// for any extras just do values.Set(key, value)
+	values.Set("api_key", apikey)
+	resp, err := http.PostForm(u.String(), values)
 	if err != nil {
 		return
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	profpacket := pm.GetProfile(accesscode)
-	_ = json.Unmarshal(body, &profpacket)
 	return
 }
 
@@ -117,21 +119,40 @@ func SubmitProfile(apikey string, address string, profile proto.ProfilePacket) (
 		return
 	}
 	u.Path = path.Join(u.Path, "saveprofile")
-	req, err := http.NewRequest("POST", u.String(), nil)
-	if err != nil {
-		return
+	values := url.Values{}
+	val := reflect.ValueOf(profile).Elem()
+	t := val.Type()
+	for i := 0; i < val.NumField(); i++ {
+		values.Set(t.Field(i).Name, fmt.Sprint(val.Field(i)))
 	}
-	query := req.URL.Query()
-	query.Add("api_key", apikey)
-	query.Add("access_code", accesscode)
-	req.URL.RawQuery = query.Encode()
-	resp, err := http.Get(req.URL.String())
+	// for any extras just do values.Set(key, value)
+	values.Set("api_key", apikey)
+	resp, err := http.PostForm(u.String(), values)
 	if err != nil {
 		return
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	profpacket := pm.GetProfile(accesscode)
-	_ = json.Unmarshal(body, &profpacket)
+	return
+}
+
+func SubmitMachineInfo(apikey string, address string, profile proto.MachineInfoPacket) (err error) {
+	u, err := url.Parse(address)
+	if err != nil {
+		return
+	}
+	u.Path = path.Join(u.Path, "submitmachineinfo")
+	values := url.Values{}
+	val := reflect.ValueOf(profile).Elem()
+	t := val.Type()
+	for i := 0; i < val.NumField(); i++ {
+		values.Set(t.Field(i).Name, fmt.Sprint(val.Field(i)))
+	}
+	// for any extras just do values.Set(key, value)
+	values.Set("api_key", apikey)
+	resp, err := http.PostForm(u.String(), values)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
 	return
 }

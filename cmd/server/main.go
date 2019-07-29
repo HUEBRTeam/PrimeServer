@@ -34,11 +34,14 @@ var config = Config{}
 func main() {
 	sb := Storage.MakeDiskBackend("profiles")
 	profileManager = ProfileManager.MakeProfileManager(sb)
-	// Fix this, it makes no sense in Go yet
-	// sync all profiles
 	if tools.IsFile(ConfigFile) {
 		log.Info("Config file not found, creating one...")
-		err := ioutil.WriteFile(ConfigFile, []byte(json.Marshal(Config{})), 0644)
+		j, err := json.Marshal(Config{})
+		if err != nil {
+			log.Error("Error: cannot read config struct, %s", err.Error()) // this shouldn't happen
+			os.Exit(1)
+		}
+		err = ioutil.WriteFile(ConfigFile, []byte(j), 0644)
 		if err != nil {
 			log.Error("Error: cannot write config file, %s", err.Error())
 			os.Exit(1)
@@ -51,18 +54,17 @@ func main() {
 	}
 	_ = json.Unmarshal(conf, &config)
 	if config.Online {
-		if tools.IsDir(sb.folder) {
-			for _, f := range sb.listProfiles() {
-				prof, err := network.RetrieveProfile(config.APIKey, strings.Replace(f.Name(), ".primeprofile", "", -1), profileManager)
+		if tools.IsDir(sb.GetFolder()) {
+			for _, f := range sb.ListProfiles() {
+				prof, err := network.RetrieveProfile(config.APIKey, strings.Replace(f.Name(), ".primeprofile", "", -1), config.ServerAddress, profileManager)
 				if err != nil {
-					log.Error("Error: could not retrieve profile for access code %s, skipping... %s", strings.Replace(f.Name(), ".primeprofile", ""), err.Error())
+					log.Error("Error: could not retrieve profile for access code %s, skipping... %s", strings.Replace(f.Name(), ".primeprofile", "", -1), err.Error())
 					break
 				}
-				profileManager.SaveProfile(prof)
+				sb.SaveProfile(prof)
 			}
 		}
 	}
-	conf.close()
 	rs := rest.MakeRestServer(8090, profileManager)
 
 	go func() {

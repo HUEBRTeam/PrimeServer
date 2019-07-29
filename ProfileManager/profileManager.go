@@ -234,3 +234,11 @@ func (pm *ProfileManager) PutScoreBoard2(sb proto.ScoreBoardPacket2) {
 		}
 	}
 }
+
+func (pm *ProfileManager) GetStorageBackend() ProfileStorageBackend {
+	return pm.sb
+}
+
+func (pm *ProfileManager) ProfileIDToAccessCode(id uint32) string {
+	return pm.profileIdToAccessCode[id]
+}
