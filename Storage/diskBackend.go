@@ -80,13 +80,13 @@ func (db *DiskBackend) genAccessCode() string {
 	return id
 }
 
-func (db *DiskBackend) CreateProfile(name string, country int, avatar int, modifiers int, speedmod int) (profile proto.ProfilePacket, err error) {
+func (db *DiskBackend) CreateProfile(name string, country int, avatar int, modifiers int, noteskinspeed int) (profile proto.ProfilePacket, err error) {
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
 
 	accessCode := db.genAccessCode()
 
-	err = profile.FromBinary(proto.MakeProfilePacket(name, country, avatar, modifiers, speedmod, accessCode).ToBinary())
+	err = profile.FromBinary(proto.MakeProfilePacket(name, country, avatar, modifiers, noteskinspeed, accessCode).ToBinary())
 
 	if err != nil {
 		return

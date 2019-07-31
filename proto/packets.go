@@ -163,37 +163,37 @@ type ScoreBoardPacket struct {
 }
 
 type ScoreBoardPacket2 struct {
-	PacketHead  uint32      //    0x00 0x0000001
-	PacketType  uint32      //    0x04 0x1000014
-	SongID      uint32      //    0x08
-	ChartLevel  uint16      //    0x0C
-	Type        uint8       //    0x0E
-	Flag        uint8       //    0x0F
-	Score       uint32      //    0x10
-	RealScore0  uint32      //    0x14
-	Unk0        [16]uint8   `json:"-"` //    0x18
-	RealScore1  uint32      //    Same as SongScore0, dafuq?
-	Grade       uint32      //    0x2C
-	Kcal        float32     //    0x30
-	Perfect     uint32      //    0x34
-	Great       uint32      //    0x38
-	Good        uint32      //    0x3c
-	Bad         uint32      //    0x40
-	Miss        uint32      //    0x44
-	MaxCombo    uint32      //    0x48
-	EXP         uint16      //    0x4c
-	PP          uint16      //    0x4e
-	RunningStep uint16      //    0x50
-	Unk2        uint16      `json:"-"` //    0x52
-	Unk3        uint32      `json:"-"` //    0x54
-	Unk4        uint32      `json:"-"` //    0x58
-	Unk5        uint32      `json:"-"` //    0x5c // Contains scroll speed, 0x14 for 5x and 0x0C for 3x
-	RushSpeed   float32     //    0x60
-	GameVersion PIUString12 //    0x64
-	MachineID   uint32      //    0xFFFFFF
-	ProfileID   uint32      //   0xB21
-	Unk6        uint32      `json:"-"`
-	Unk7        uint32      `json:"-"`
+	PacketHead    uint32      //    0x00 0x0000001
+	PacketType    uint32      //    0x04 0x1000014
+	SongID        uint32      //    0x08
+	ChartLevel    uint16      //    0x0C
+	Type          uint8       //    0x0E
+	Flag          uint8       //    0x0F
+	Score         uint32      //    0x10
+	RealScore0    uint32      //    0x14
+	Unk0          [16]uint8   `json:"-"` //    0x18
+	RealScore1    uint32      //    Same as SongScore0, dafuq?
+	Grade         uint32      //    0x2C
+	Kcal          float32     //    0x30
+	Perfect       uint32      //    0x34
+	Great         uint32      //    0x38
+	Good          uint32      //    0x3c
+	Bad           uint32      //    0x40
+	Miss          uint32      //    0x44
+	MaxCombo      uint32      //    0x48
+	EXP           uint16      //    0x4c
+	PP            uint16      //    0x4e
+	RunningStep   uint16      //    0x50
+	Unk2          uint16      `json:"-"` //    0x52
+	Modifiers     uint32      //    0x54
+	Unk4          uint32      `json:"-"` //    0x58
+	NoteSkinSpeed uint32      //    0x5c // Contains scroll speed, 0x14 for 5x and 0x0C for 3x
+	RushSpeed     float32     //    0x60
+	GameVersion   PIUString12 //    0x64
+	MachineID     uint32      //    0xFFFFFF
+	ProfileID     uint32      //   0xB21
+	SongCategory  uint32
+	Unk7          uint32 `json:"-"`
 }
 
 func (p *ScoreBoardPacket2) String() string {
@@ -219,14 +219,14 @@ func (p *ScoreBoardPacket2) String() string {
 	s += fmt.Sprintf("\tPP: %d\n", p.PP)
 	s += fmt.Sprintf("\tRunningStep: %d\n", p.RunningStep)
 	s += fmt.Sprintf("\tUnk2: %d (%x)\n", p.Unk2, p.Unk2)
-	s += fmt.Sprintf("\tUnk3: %d (%x)\n", p.Unk3, p.Unk3)
+	s += fmt.Sprintf("\tModifiers: %d (%x)\n", p.Modifiers, p.Modifiers)
 	s += fmt.Sprintf("\tUnk4: %d (%x)\n", p.Unk4, p.Unk4)
-	s += fmt.Sprintf("\tUnk5: %d (%x)\n", p.Unk5, p.Unk5)
+	s += fmt.Sprintf("\tNoteSkinSpeed: %d (%x)\n", p.NoteSkinSpeed, p.NoteSkinSpeed)
 	s += fmt.Sprintf("\tRushSpeed: %f\n", p.RushSpeed)
 	s += fmt.Sprintf("\tGameVersion: %s\n", p.GameVersion.String())
 	s += fmt.Sprintf("\tMachineID: %d (%x)\n", p.MachineID, p.MachineID)
 	s += fmt.Sprintf("\tProfileID: %d (%x)\n", p.ProfileID, p.ProfileID)
-	s += fmt.Sprintf("\tUnk6: %d (%x)\n", p.Unk6, p.Unk6)
+	s += fmt.Sprintf("\tSongCategory: %d (%x)\n", p.SongCategory, p.SongCategory)
 	s += fmt.Sprintf("\tUnk7: %d (%x)\n", p.Unk7, p.Unk7)
 
 	return s
@@ -253,29 +253,29 @@ type LoginPacketV2 struct {
 }
 
 type ProfilePacket struct {
-	PacketHead  uint32      `json:"-"` //    0x00 0x0000001
-	PacketType  uint32      `json:"-"` //    0x04 0x1000004
-	PlayerID    uint32      //    0x08
-	AccessCode  PIUString32 //    0x0C
-	Unk0        uint32      `json:"-"`
-	Nickname    PIUNickname //    0x30
-	ProfileID   uint32      //    0x10
-	CountryID   uint8       //    0x3C
-	Avatar      uint8       //    0x40
-	Level       uint8       //    0x42
-	Unk1        uint8       `json:"-"`
-	EXP         uint64
-	PP          uint64
-	RankSingle  uint64
-	RankDouble  uint64
-	RunningStep uint64
-	PlayCount   uint32
-	Kcal        float32
-	Modifiers   uint64
-	SpeedMod    uint32
-	RushSpeed   float32
-	Unk2        uint32       `json:"-"`
-	Scores      [4384]UScore //    0x88
+	PacketHead    uint32      `json:"-"` //    0x00 0x0000001
+	PacketType    uint32      `json:"-"` //    0x04 0x1000004
+	PlayerID      uint32      //    0x08
+	AccessCode    PIUString32 //    0x0C
+	Unk0          uint32      `json:"-"`
+	Nickname      PIUNickname //    0x30
+	ProfileID     uint32      //    0x10
+	CountryID     uint8       //    0x3C
+	Avatar        uint8       //    0x40
+	Level         uint8       //    0x42
+	Unk1          uint8       `json:"-"`
+	EXP           uint64
+	PP            uint64
+	RankSingle    uint64
+	RankDouble    uint64
+	RunningStep   uint64
+	PlayCount     uint32
+	Kcal          float32
+	Modifiers     uint64
+	NoteSkinSpeed uint32
+	RushSpeed     float32
+	Unk2          uint32       `json:"-"`
+	Scores        [4384]UScore //    0x88
 }
 
 type UScore struct {

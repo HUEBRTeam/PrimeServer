@@ -122,7 +122,7 @@ func handleScoreBoardV2Packet(l *slog.Instance, conn net.Conn, v proto.ScoreBoar
 	l.Info("User %s played a song", nick)
 	l.Info("%s", v.String())
 	if config.Online {
-		err := network.SubmitScore(config.APIKey, config.ServerAddress, v)
+		err := network.SubmitScore(config.APIKey, config.ServerAddress, v, profileManager.ProfileIDToAccessCode(v.ProfileID))
 		if err != nil {
 			log.Error("Error: could not send Score packet %s", err.Error())
 		}
@@ -130,7 +130,7 @@ func handleScoreBoardV2Packet(l *slog.Instance, conn net.Conn, v proto.ScoreBoar
 		if err != nil {
 			log.Error("Error: could not get profile %s", err.Error())
 		}
-		err = network.SubmitProfile(config.APIKey, config.ServerAddress, p)
+		err = network.SubmitProfile(config.APIKey, config.ServerAddress, p, profileManager.ProfileIDToAccessCode(v.ProfileID))
 		if err != nil {
 			log.Error("Error: could not send Profile packet %s", err.Error())
 		}

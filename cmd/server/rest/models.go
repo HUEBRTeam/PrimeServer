@@ -1,11 +1,11 @@
 package rest
 
 type CreateProfileRequest struct {
-	Name      string
-	CountryID int
-	Avatar    int
-	Modifiers int
-	SpeedMod  int
+	Name          string
+	CountryID     int
+	Avatar        int
+	Modifiers     int
+	NoteSkinSpeed int
 }
 
 type CreateProfileResponse struct {
@@ -14,12 +14,12 @@ type CreateProfileResponse struct {
 }
 
 type CreateProfileChange struct {
-	AccessCode string
-	Nickname   string
-	CountryID  int
-	Avatar     int
-	Modifiers  int
-	SpeedMod   int
+	AccessCode    string
+	Nickname      string
+	CountryID     int
+	Avatar        int
+	Modifiers     int
+	NoteSkinSpeed int
 }
 
 type CreateStatus struct {

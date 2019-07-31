@@ -37,7 +37,7 @@ func RetrieveProfile(apikey string, accesscode string, address string, pm *Profi
 	if err != nil {
 		return
 	}
-	_ = json.Unmarshal(body, &profpacket)
+	_ = json.Unmarshal(body, &profpacket) // may have to switch profpacket.AccessCode
 	return
 }
 
@@ -91,7 +91,7 @@ func RetrieveRankMode(apikey string, address string, scoretype string) (rnkpacke
 	return
 }
 
-func SubmitScore(apikey string, address string, score proto.ScoreBoardPacket2) (err error) {
+func SubmitScore(apikey string, address string, score proto.ScoreBoardPacket2, accesscode string) (err error) {
 	u, err := url.Parse(address)
 	if err != nil {
 		return
@@ -105,6 +105,7 @@ func SubmitScore(apikey string, address string, score proto.ScoreBoardPacket2) (
 	}
 	// for any extras just do values.Set(key, value)
 	values.Set("api_key", apikey)
+	values.Set("AccessCode", accesscode)
 	resp, err := http.PostForm(u.String(), values)
 	if err != nil {
 		return
@@ -113,7 +114,7 @@ func SubmitScore(apikey string, address string, score proto.ScoreBoardPacket2) (
 	return
 }
 
-func SubmitProfile(apikey string, address string, profile proto.ProfilePacket) (err error) {
+func SubmitProfile(apikey string, address string, profile proto.ProfilePacket, accesscode string) (err error) {
 	u, err := url.Parse(address)
 	if err != nil {
 		return
@@ -127,6 +128,7 @@ func SubmitProfile(apikey string, address string, profile proto.ProfilePacket) (
 	}
 	// for any extras just do values.Set(key, value)
 	values.Set("api_key", apikey)
+	values.Set("AccessCode", accesscode)
 	resp, err := http.PostForm(u.String(), values)
 	if err != nil {
 		return
