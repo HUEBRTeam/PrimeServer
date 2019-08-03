@@ -35,9 +35,13 @@ func RetrieveProfile(apikey string, accesscode string, address string, pm *Profi
 	body, err := ioutil.ReadAll(resp.Body)
 	profpacket, err = pm.GetStorageBackend().GetProfile(accesscode)
 	if err != nil {
+		profpacket = *proto.MakeProfilePacketDefault("", accesscode)
+		err = nil
+	}
+	err = json.Unmarshal(body, &profpacket) // may have to switch profpacket.AccessCode
+	if err != nil {
 		return
 	}
-	_ = json.Unmarshal(body, &profpacket) // may have to switch profpacket.AccessCode
 	return
 }
 
@@ -86,8 +90,8 @@ func RetrieveRankMode(apikey string, address string, scoretype string) (rnkpacke
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	wbpacket := proto.MakeRankModePacket([]proto.SongRank{})
-	_ = json.Unmarshal(body, &wbpacket)
+	rnkpacket = proto.MakeRankModePacket([]proto.SongRank{})
+	_ = json.Unmarshal(body, &rnkpacket)
 	return
 }
 
@@ -98,7 +102,7 @@ func SubmitScore(apikey string, address string, score proto.ScoreBoardPacket2, a
 	}
 	u.Path = path.Join(u.Path, "submit")
 	values := url.Values{}
-	val := reflect.ValueOf(score).Elem()
+	val := reflect.ValueOf(&score).Elem()
 	t := val.Type()
 	for i := 0; i < val.NumField(); i++ { // iterate through struct fields and convert everything to strings
 		values.Set(t.Field(i).Name, fmt.Sprint(val.Field(i)))
@@ -121,7 +125,7 @@ func SubmitProfile(apikey string, address string, profile proto.ProfilePacket, a
 	}
 	u.Path = path.Join(u.Path, "saveprofile")
 	values := url.Values{}
-	val := reflect.ValueOf(profile).Elem()
+	val := reflect.ValueOf(&profile).Elem()
 	t := val.Type()
 	for i := 0; i < val.NumField(); i++ {
 		values.Set(t.Field(i).Name, fmt.Sprint(val.Field(i)))
@@ -144,7 +148,7 @@ func SubmitMachineInfo(apikey string, address string, profile proto.MachineInfoP
 	}
 	u.Path = path.Join(u.Path, "submitmachineinfo")
 	values := url.Values{}
-	val := reflect.ValueOf(profile).Elem()
+	val := reflect.ValueOf(&profile).Elem()
 	t := val.Type()
 	for i := 0; i < val.NumField(); i++ {
 		values.Set(t.Field(i).Name, fmt.Sprint(val.Field(i)))

@@ -2,6 +2,7 @@ package main
 
 import (
 	"net"
+	"fmt"
 
 	"github.com/HUEBRTeam/PrimeServer"
 	"github.com/HUEBRTeam/PrimeServer/cmd/server/network"
@@ -26,10 +27,11 @@ func handleLoginPacketV2(l *slog.Instance, conn net.Conn, v proto.LoginPacketV2)
 		prof, err := network.RetrieveProfile(config.APIKey, ac, config.ServerAddress, profileManager)
 		if err != nil {
 			log.Error("Error: could not retrieve profile for access code %s, skipping... %s", ac, err.Error())
-		}
-		err = profileManager.GetStorageBackend().SaveProfile(prof)
-		if err != nil {
-			log.Error("Error: could not save profile %s", err.Error())
+		} else {
+			err = profileManager.GetStorageBackend().SaveProfile(prof)
+			if err != nil {
+				log.Error("Error: could not save profile %s", err.Error())
+			}
 		}
 		/*if md5check { // probably only do this for score submissions
 			calculate packets md5
@@ -49,6 +51,7 @@ func handleLoginPacketV2(l *slog.Instance, conn net.Conn, v proto.LoginPacketV2)
 		if err != nil {
 			log.Error("Error: could not retrieve Rank Mode packet %s", err.Error())
 		} else {
+			fmt.Printf("%+v\n", rank)
 			err = profileManager.GetStorageBackend().SaveRankMode(rank)
 			if err != nil {
 				log.Error("Error: could not save Rank Mode packet %s", err.Error())

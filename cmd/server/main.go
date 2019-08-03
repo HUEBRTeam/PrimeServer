@@ -34,7 +34,7 @@ var config = Config{}
 func main() {
 	sb := Storage.MakeDiskBackend("profiles")
 	profileManager = ProfileManager.MakeProfileManager(sb)
-	if tools.IsFile(ConfigFile) {
+	if !tools.IsFile(ConfigFile) {
 		log.Info("Config file not found, creating one...")
 		j, err := json.Marshal(Config{})
 		if err != nil {
