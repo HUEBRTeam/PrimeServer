@@ -39,9 +39,6 @@ func RetrieveProfile(apikey string, accesscode string, address string, pm *Profi
 		err = nil
 	}
 	err = json.Unmarshal(body, &profpacket) // may have to switch profpacket.AccessCode
-	if err != nil {
-		return
-	}
 	return
 }
 
@@ -66,7 +63,7 @@ func RetrieveWorldBest(apikey string, address string, scoretype string) (wbpacke
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	wbpacket = proto.MakeWorldBestPacket([]proto.WorldBestScore{})
-	_ = json.Unmarshal(body, &wbpacket)
+	err = json.Unmarshal(body, &wbpacket)
 	return
 }
 
@@ -91,7 +88,7 @@ func RetrieveRankMode(apikey string, address string, scoretype string) (rnkpacke
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	rnkpacket = proto.MakeRankModePacket([]proto.SongRank{})
-	_ = json.Unmarshal(body, &rnkpacket)
+	err = json.Unmarshal(body, &rnkpacket)
 	return
 }
 

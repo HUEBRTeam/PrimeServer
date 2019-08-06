@@ -28,6 +28,7 @@ func handleLoginPacketV2(l *slog.Instance, conn net.Conn, v proto.LoginPacketV2)
 		if err != nil {
 			log.Error("Error: could not retrieve profile for access code %s, skipping... %s", ac, err.Error())
 		} else {
+			fmt.Printf("%+v\n", prof)
 			err = profileManager.GetStorageBackend().SaveProfile(prof)
 			if err != nil {
 				log.Error("Error: could not save profile %s", err.Error())
@@ -42,6 +43,7 @@ func handleLoginPacketV2(l *slog.Instance, conn net.Conn, v proto.LoginPacketV2)
 		if err != nil {
 			log.Error("Error: could not retrieve World Best packet %s", err.Error())
 		} else {
+			fmt.Printf("%+v\n", wb)
 			err = profileManager.GetStorageBackend().SaveWorldBest(wb)
 			if err != nil {
 				log.Error("Error: could not save World Best packet %s", err.Error())
