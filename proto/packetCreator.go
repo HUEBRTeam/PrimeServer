@@ -66,6 +66,16 @@ func MakeWorldBestPacket(scores []WorldBestScore) *WorldBestPacket {
 	for i, v := range scores {
 		if i < 4095 {
 			s[i] = v
+		} else {
+			s[i] = WorldBestScore{
+				SongID:     uint32(0),
+				ChartLevel: uint16(0),
+				ChartMode:  uint16(0),
+				Score:      uint32(0),
+				Unk0:       uint32(0),
+				Unk1:       uint32(0),
+				Nickname:   MakePIUNickName(""),
+			}
 		}
 	}
 
