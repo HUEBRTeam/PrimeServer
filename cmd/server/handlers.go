@@ -53,7 +53,7 @@ func handleLoginPacketV2(l *slog.Instance, conn net.Conn, v proto.LoginPacketV2)
 		if err != nil {
 			log.Error("Error: could not retrieve Rank Mode packet %s", err.Error())
 		} else {
-			fmt.Printf("%+v\n", rank)
+			//fmt.Printf("%+v\n", rank)
 			err = profileManager.GetStorageBackend().SaveRankMode(rank)
 			if err != nil {
 				log.Error("Error: could not save Rank Mode packet %s", err.Error())

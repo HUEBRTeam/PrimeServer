@@ -70,10 +70,10 @@ func (n PIUString12) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	fmt.Printf("String: %v\n", s)
+	//fmt.Printf("String: %v\n", s)
 	a := makePIUString(s, 12)
 	copy(n[:], a)
-	fmt.Printf("PIUString: %v\n", n.String())
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 
@@ -86,10 +86,10 @@ func (n PIUNickname) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	fmt.Printf("String: %v\n", s)
+	//fmt.Printf("String: %v\n", s)
 	a := makePIUString(s, 12)
 	copy(n[:], a)
-	fmt.Printf("PIUString: %v\n", n.String())
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 
@@ -102,10 +102,10 @@ func (n PIUString16) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	fmt.Printf("String: %v\n", s)
+	//fmt.Printf("String: %v\n", s)
 	a := makePIUString(s, 16)
 	copy(n[:], a)
-	fmt.Printf("PIUString: %v\n", n.String())
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 
@@ -118,10 +118,10 @@ func (n PIUMacAddress) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	fmt.Printf("String: %v\n", s)
+	//fmt.Printf("String: %v\n", s)
 	a := makePIUString(s, 20)
 	copy(n[:], a)
-	fmt.Printf("PIUString: %v\n", n.String())
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 
@@ -134,10 +134,10 @@ func (n PIUString32) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	fmt.Printf("String: %v\n", s)
+	//fmt.Printf("String: %v\n", s)
 	a := makePIUString(s, 32)
 	copy(n[:], a)
-	fmt.Printf("PIUString: %v\n", n.String())
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 
@@ -150,10 +150,10 @@ func (n PIUString128) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	fmt.Printf("String: %v\n", s)
+	//fmt.Printf("String: %v\n", s)
 	a := makePIUString(s, 128)
 	copy(n[:], a)
-	fmt.Printf("PIUString: %v\n", n.String())
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 

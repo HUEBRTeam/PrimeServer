@@ -62,6 +62,7 @@ func RetrieveWorldBest(apikey string, address string, scoretype string) (wbpacke
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+        fmt.Println(string(body))
 	wbpacket = proto.MakeWorldBestPacket([]proto.WorldBestScore{})
 	err = json.Unmarshal(body, &wbpacket)
 	return
