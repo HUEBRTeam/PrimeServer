@@ -3,7 +3,7 @@ package proto
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	//"fmt"
 )
 
 type GenericPacket interface {

@@ -43,7 +43,7 @@ func handleLoginPacketV2(l *slog.Instance, conn net.Conn, v proto.LoginPacketV2)
 		if err != nil {
 			log.Error("Error: could not retrieve World Best packet %s", err.Error())
 		} else {
-			fmt.Printf("%+v\n", wb)
+			fmt.Printf("%+v\n", wb.WorldScores[0])
 			err = profileManager.GetStorageBackend().SaveWorldBest(wb)
 			if err != nil {
 				log.Error("Error: could not save World Best packet %s", err.Error())
