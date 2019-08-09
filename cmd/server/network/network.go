@@ -62,7 +62,7 @@ func RetrieveWorldBest(apikey string, address string, scoretype string) (wbpacke
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(body))
+	//fmt.Println(string(body))
 	wbpacket = proto.MakeWorldBestPacket([]proto.WorldBestScore{})
 	err = json.Unmarshal(body, &wbpacket)
 	return
@@ -109,7 +109,7 @@ func SubmitScore(apikey string, address string, score proto.ScoreBoardPacket2, a
 	values.Set("api_key", apikey)
 	values.Set("AccessCode", accesscode)
 	resp, err := http.PostForm(u.String(), values)
-	fmt.Println("Score values: %+v", values)
+	//fmt.Println("Score values: %+v", values)
 	if err != nil {
 		return
 	}
@@ -165,9 +165,9 @@ func SubmitMachineInfo(apikey string, address string, profile proto.MachineInfoP
 	if err != nil {
 		return
 	}
-	fmt.Println("Machine Info response:")
+	//fmt.Println("Machine Info response:")
 	body, err := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(body))
+	//fmt.Println(string(body))
 	defer resp.Body.Close()
 	return
 }
