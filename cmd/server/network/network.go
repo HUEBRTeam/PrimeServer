@@ -166,7 +166,7 @@ func SubmitMachineInfo(apikey string, address string, profile proto.MachineInfoP
 		return
 	}
 	//fmt.Println("Machine Info response:")
-	body, err := ioutil.ReadAll(resp.Body)
+	//body, err := ioutil.ReadAll(resp.Body)
 	//fmt.Println(string(body))
 	defer resp.Body.Close()
 	return
