@@ -92,9 +92,9 @@ func handleMachineInfoPacket(l *slog.Instance, conn net.Conn, v proto.MachineInf
 }
 
 func handleRequestWorldBestPacket(l *slog.Instance, conn net.Conn, v proto.RequestWorldBestPacket) {
-	wb, err := profileManager.GetStorageBackend().GetWorldBest()
+	wb, err := network.RetrieveWorldBest(config.APIKey, config.ServerAddress, config.ScoreType)
 	if err != nil {
-		log.Error("Error: could not get World Best packet %s", err.Error())
+		log.Error("Error: could not retrieve World Best packet %s", err.Error())
 	}
 	PrimeServer.SendPacket(conn, wb.ToBinary())
 }
