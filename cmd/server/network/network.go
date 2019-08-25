@@ -1,11 +1,13 @@
 package network
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"reflect"
 
@@ -135,7 +137,17 @@ func SubmitProfile(apikey string, address string, profile proto.ProfilePacket, a
 	// for any extras just do values.Set(key, value)
 	values.Set("api_key", apikey)
 	values.Set("AccessCode", accesscode)
-	fmt.Println("Profile values: %+v", values)
+
+	// remove this after debugging
+	f, err := os.Create("submittedprofile.log")
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	w := bufio.NewWriter(f)
+	_, err = w.WriteString(fmt.Sprintf("%+v\n", values))
+	w.Flush()
+
 	resp, err := http.PostForm(u.String(), values)
 	if err != nil {
 		return
