@@ -56,29 +56,29 @@ type UnknownPacket1 struct {
 }
 
 type MachineInfoPacket struct {
-	PacketHead     uint32        `json:"PacketHead"`//    0x00 0x0000001
-	PacketType     uint32        `json:"PacketType"`//    0x04 0x1000011
-	MachineID      uint32        `json:"MachineID"`//    0x08
-	DongleID       uint32        `json:"DongleID"`//    0x0C
-	CountryID      uint32        `json:"CountryID"`//    0x10
-	MacAddress     PIUMacAddress `json:"MacAddress"`//    0x14
-	Version        PIUString12   `json:"Version"`//    0x28
-	Processor      PIUString128  `json:"Processor"`//    0x34
-	MotherBoard    PIUString128  `json:"MotherBoard"`//    0xb4
-	GraphicsCard   PIUString128  `json:"GraphicsCard"`//    0x134
-	HDDSerial      PIUString32   `json:"HDDSerial"`//    0x1b4
-	USBMode        PIUString128  `json:"USBMode"`//    Mode 1.0 / Mode 1.1 / Mode 2.0
-	Memory         uint32        `json:"Memory"`//    0x254
-	ConfigMagic    uint32        `json:"ConfigMagic"`//    0x258
-	Unk3           uint32        `json:"-"` //    0x25c
-	Unk4           uint32        `json:"-"` //    0x260
-	Unk5           uint32        `json:"-"` //    0x264
-	Unk6           uint32        `json:"-"` //    0x268
-	Unk7           uint32        `json:"-"` //    0x26c
-	Unk8           uint32        `json:"-"` //    0x270
-	Unk9           uint32        `json:"-"` //    0x274
-	Unk10          uint32        `json:"-"` //    0x278
-	Unk11          uint32        `json:"-"` //    0x27c
+	PacketHead     uint32        `json:"PacketHead"`   //    0x00 0x0000001
+	PacketType     uint32        `json:"PacketType"`   //    0x04 0x1000011
+	MachineID      uint32        `json:"MachineID"`    //    0x08
+	DongleID       uint32        `json:"DongleID"`     //    0x0C
+	CountryID      uint32        `json:"CountryID"`    //    0x10
+	MacAddress     PIUMacAddress `json:"MacAddress"`   //    0x14
+	Version        PIUString12   `json:"Version"`      //    0x28
+	Processor      PIUString128  `json:"Processor"`    //    0x34
+	MotherBoard    PIUString128  `json:"MotherBoard"`  //    0xb4
+	GraphicsCard   PIUString128  `json:"GraphicsCard"` //    0x134
+	HDDSerial      PIUString32   `json:"HDDSerial"`    //    0x1b4
+	USBMode        PIUString128  `json:"USBMode"`      //    Mode 1.0 / Mode 1.1 / Mode 2.0
+	Memory         uint32        `json:"Memory"`       //    0x254
+	ConfigMagic    uint32        `json:"ConfigMagic"`  //    0x258
+	Unk3           uint32        `json:"-"`            //    0x25c
+	Unk4           uint32        `json:"-"`            //    0x260
+	Unk5           uint32        `json:"-"`            //    0x264
+	Unk6           uint32        `json:"-"`            //    0x268
+	Unk7           uint32        `json:"-"`            //    0x26c
+	Unk8           uint32        `json:"-"`            //    0x270
+	Unk9           uint32        `json:"-"`            //    0x274
+	Unk10          uint32        `json:"-"`            //    0x278
+	Unk11          uint32        `json:"-"`            //    0x27c
 	Unk12          uint32        `json:"-"`
 	Unk13          uint32        `json:"-"`
 	Unk14          uint32        `json:"-"`
@@ -163,37 +163,37 @@ type ScoreBoardPacket struct {
 }
 
 type ScoreBoardPacket2 struct {
-	PacketHead    uint32      `json:"PacketHead"`//    0x00 0x0000001
-	PacketType    uint32      `json:"PacketType"`//    0x04 0x1000014
-	SongID        uint32      `json:"SongID"`//    0x08
-	ChartLevel    uint16      `json:"ChartLevel"`//    0x0C
-	Type          uint8       `json:"Type"`//    0x0E
-	Flag          uint8       `json:"Flag"`//    0x0F
-	Score         uint32      `json:"Score"`//    0x10
-	RealScore0    uint32      `json:"RealScore0"`//    0x14
-	Unk0          [16]uint8   `json:"-"` //    0x18
-	RealScore1    uint32      `json:"RealScore1"`//    Same as SongScore0, dafuq?
-	Grade         uint32      `json:"Grade"`//    0x2C
-	Kcal          float32     `json:"Kcal"`//    0x30
-	Perfect       uint32      `json:"Perfect"`//    0x34
-	Great         uint32      `json:"Great"`//    0x38
-	Good          uint32      `json:"Good"`//    0x3c
-	Bad           uint32      `json:"Bad"`//    0x40
-	Miss          uint32      `json:"Miss"`//    0x44
-	MaxCombo      uint32      `json:"MaxCombo"`//    0x48
-	EXP           uint16      `json:"EXP"`//    0x4c
-	PP            uint16      `json:"PP"`//    0x4e
-	RunningStep   uint16      `json:"RunningStep"`//    0x50
-	Unk2          uint16      `json:"-"` //    0x52
-	Modifiers     uint32      `json:"Modifiers"`//    0x54
-	Unk4          uint32      `json:"-"` //    0x58
-	NoteSkinSpeed uint32      `json:"NoteSkinSpeed"`//    0x5c // Contains scroll speed, 0x14 for 5x and 0x0C for 3x
-	RushSpeed     float32     `json:"RushSpeed"`//    0x60
-	GameVersion   PIUString12 `json:"GameVersion"`//    0x64
-	MachineID     uint32      `json:"MachineID"`//    0xFFFFFF
-	ProfileID     uint32      `json:"ProfileID"`//   0xB21
+	PacketHead    uint32      `json:"PacketHead"`    //    0x00 0x0000001
+	PacketType    uint32      `json:"PacketType"`    //    0x04 0x1000014
+	SongID        uint32      `json:"SongID"`        //    0x08
+	ChartLevel    uint16      `json:"ChartLevel"`    //    0x0C
+	Type          uint8       `json:"Type"`          //    0x0E
+	Flag          uint8       `json:"Flag"`          //    0x0F
+	Score         uint32      `json:"Score"`         //    0x10
+	RealScore0    uint32      `json:"RealScore0"`    //    0x14
+	Unk0          [16]uint8   `json:"-"`             //    0x18
+	RealScore1    uint32      `json:"RealScore1"`    //    Same as SongScore0, dafuq?
+	Grade         uint32      `json:"Grade"`         //    0x2C
+	Kcal          float32     `json:"Kcal"`          //    0x30
+	Perfect       uint32      `json:"Perfect"`       //    0x34
+	Great         uint32      `json:"Great"`         //    0x38
+	Good          uint32      `json:"Good"`          //    0x3c
+	Bad           uint32      `json:"Bad"`           //    0x40
+	Miss          uint32      `json:"Miss"`          //    0x44
+	MaxCombo      uint32      `json:"MaxCombo"`      //    0x48
+	EXP           uint16      `json:"EXP"`           //    0x4c
+	PP            uint16      `json:"PP"`            //    0x4e
+	RunningStep   uint16      `json:"RunningStep"`   //    0x50
+	Unk2          uint16      `json:"-"`             //    0x52
+	Modifiers     uint32      `json:"Modifiers"`     //    0x54
+	Unk4          uint32      `json:"-"`             //    0x58
+	NoteSkinSpeed uint32      `json:"NoteSkinSpeed"` //    0x5c // Contains scroll speed, 0x14 for 5x and 0x0C for 3x
+	RushSpeed     float32     `json:"RushSpeed"`     //    0x60
+	GameVersion   PIUString12 `json:"GameVersion"`   //    0x64
+	MachineID     uint32      `json:"MachineID"`     //    0xFFFFFF
+	ProfileID     uint32      `json:"ProfileID"`     //   0xB21
 	SongCategory  uint32      `json:"SongCategory"`
-	Unk7          uint32 `json:"-"`
+	Unk7          uint32      `json:"-"`
 }
 
 func (p *ScoreBoardPacket2) String() string {
@@ -253,39 +253,39 @@ type LoginPacketV2 struct {
 }
 
 type ProfilePacket struct {
-	PacketHead    uint32      `json:"-"` //    0x00 0x0000001
-	PacketType    uint32      `json:"-"` //    0x04 0x1000004
-	PlayerID      uint32      `json:"PlayerID"`//    0x08
-	AccessCode    PIUString32 `json:"AccessCode"`//    0x0C
-	Unk0          uint32      `json:"-"`
-	Nickname      PIUNickname `json:"Nickname"`//    0x30
-	ProfileID     uint32      `json:"ProfileID"`//    0x10
-	CountryID     uint8       `json:"CountryID"`//    0x3C
-	Avatar        uint8       `json:"Avatar"`//    0x40
-	Level         uint8       `json:"Level"`//    0x42
-	Unk1          uint8       `json:"-"`
-	EXP           uint64      `json:"EXP"`
-	PP            uint64      `json:"PP"`
-	RankSingle    uint64      `json:"RankSingle"`
-	RankDouble    uint64      `json:"RankDouble"`
-	RunningStep   uint64      `json:"RunningStep"`
-	PlayCount     uint32      `json:"PlayCount"`
-	Kcal          float32     `json:"Kcal"`
-	Modifiers     uint64      `json:"Modifiers"`
-	NoteSkinSpeed uint32      `json:"NoteSkinSpeed"`
-	RushSpeed     float32     `json:"RushSpeed"`
+	PacketHead    uint32       `json:"-"`          //    0x00 0x0000001
+	PacketType    uint32       `json:"-"`          //    0x04 0x1000004
+	PlayerID      uint32       `json:"PlayerID"`   //    0x08
+	AccessCode    PIUString32  `json:"AccessCode"` //    0x0C
+	Unk0          uint32       `json:"-"`
+	Nickname      PIUNickname  `json:"Nickname"`  //    0x30
+	ProfileID     uint32       `json:"ProfileID"` //    0x10
+	CountryID     uint8        `json:"CountryID"` //    0x3C
+	Avatar        uint8        `json:"Avatar"`    //    0x40
+	Level         uint8        `json:"Level"`     //    0x42
+	Unk1          uint8        `json:"-"`
+	EXP           uint64       `json:"EXP"`
+	PP            uint64       `json:"PP"`
+	RankSingle    uint64       `json:"RankSingle"`
+	RankDouble    uint64       `json:"RankDouble"`
+	RunningStep   uint64       `json:"RunningStep"`
+	PlayCount     uint32       `json:"PlayCount"`
+	Kcal          float32      `json:"Kcal"`
+	Modifiers     uint64       `json:"Modifiers"`
+	NoteSkinSpeed uint32       `json:"NoteSkinSpeed"`
+	RushSpeed     float32      `json:"RushSpeed"`
 	Unk2          uint32       `json:"-"`
-	Scores        [4384]UScore `json:"Scores"`//    0x88
+	Scores        [4384]UScore `json:"Scores"` //    0x88
 }
 
 type UScore struct {
-	SongID       uint32 `json:"SongID"`//    0x00
-	ChartLevel   uint8  `json:"ChartLevel"`//    0x04
-	Unk0         uint8  `json:"-"` //    0x05
-	GameDataFlag uint16 `json:"GameDataFlag"`//    0x06
-	Score        uint32 `json:"Score"`//    0x08
-	RealScore    uint32 `json:"RealScore"`//   Maybe
-	Unk2         uint32 `json:"-"` //    0x10
+	SongID       uint32 `json:"SongID"`       //    0x00
+	ChartLevel   uint8  `json:"ChartLevel"`   //    0x04
+	Unk0         uint8  `json:"-"`            //    0x05
+	GameDataFlag uint16 `json:"GameDataFlag"` //    0x06
+	Score        uint32 `json:"Score"`        //    0x08
+	RealScore    uint32 `json:"RealScore"`    //   Maybe
+	Unk2         uint32 `json:"-"`            //    0x10
 }
 
 type RequestLevelUpInfoPacket struct {
@@ -308,27 +308,27 @@ type GameOverPacket struct {
 }
 
 type WorldBestPacket struct {
-	PacketHead  uint32 `json:"-"` //    0x00 0x00000002
-	PacketType  uint32 `json:"-"` //    0x04 0x10000009
-	Unk0        uint32 `json:"-"` //    0x08 5056
-	Unk1        uint32 `json:"-"` //    0x0C 0x0000000F
-	Unk2        uint32 `json:"-"` //    0x10 674200
-	Unk3        uint32 `json:"-"` //    0x14 0x00000000
-	Unk4        uint32 `json:"-"` //    0x18 0x00000000
+	PacketHead  uint32               `json:"-"` //    0x00 0x00000002
+	PacketType  uint32               `json:"-"` //    0x04 0x10000009
+	Unk0        uint32               `json:"-"` //    0x08 5056
+	Unk1        uint32               `json:"-"` //    0x0C 0x0000000F
+	Unk2        uint32               `json:"-"` //    0x10 674200
+	Unk3        uint32               `json:"-"` //    0x14 0x00000000
+	Unk4        uint32               `json:"-"` //    0x18 0x00000000
 	WorldScores [4095]WorldBestScore `json:"WorldScores"`
-	Unk5        uint32 `json:"-"` //    0x?? 0x00000000
-	Unk6        uint32 `json:"-"` //    0x?? 0x00000000
-	PacketTrail uint32 `json:"-"` //    0x?? 0x00000000
+	Unk5        uint32               `json:"-"` //    0x?? 0x00000000
+	Unk6        uint32               `json:"-"` //    0x?? 0x00000000
+	PacketTrail uint32               `json:"-"` //    0x?? 0x00000000
 }
 
 type WorldBestScore struct {
-	SongID     uint32      `json:"SongID"`//
-	ChartLevel uint16      `json:"ChartLevel"`//
-	ChartMode  uint16      `json:"ChartMode"`//
-	Score      uint32      `json:"Score"`//
-	Unk0       uint32      `json:"-"` //
-	Unk1       uint32      `json:"-"` //
-	Nickname   PIUNickname `json:"Nickname"`//
+	SongID     uint32      `json:"SongID"`     //
+	ChartLevel uint16      `json:"ChartLevel"` //
+	ChartMode  uint16      `json:"ChartMode"`  //
+	Score      uint32      `json:"Score"`      //
+	Unk0       uint32      `json:"-"`          //
+	Unk1       uint32      `json:"-"`          //
+	Nickname   PIUNickname `json:"Nickname"`   //
 }
 
 type RankModePacket struct {

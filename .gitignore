@@ -1,5 +1,8 @@
 .idea
 cmd/server/server
 cmd/server/profiles
-cmd/server/prime.bin
 cmd/gameEditor/piu*
+cmd/profileMaker/profiles
+cmd/profileMaker/*.bin
+cmd/gameEditor/editor
+cmd/server/*.bin

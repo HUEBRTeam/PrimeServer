@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net"
 	"fmt"
+	"net"
 
 	"github.com/HUEBRTeam/PrimeServer"
 	"github.com/HUEBRTeam/PrimeServer/cmd/server/network"
