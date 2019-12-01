@@ -2,13 +2,15 @@ package Storage
 
 import (
 	"fmt"
-	"github.com/HUEBRTeam/PrimeServer/proto"
-	"github.com/gofrs/uuid"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 	"sync"
+
+	"github.com/HUEBRTeam/PrimeServer/proto"
+	"github.com/HUEBRTeam/PrimeServer/tools"
+	"github.com/gofrs/uuid"
 )
 
 type DiskBackend struct {
@@ -59,9 +61,17 @@ func (db *DiskBackend) profileExists(accessCode string) bool {
 	return false
 }
 
+func (db *DiskBackend) ListProfiles() []os.FileInfo { // returns all files in profiles folder
+	files, err := ioutil.ReadDir(db.folder)
+	if err != nil {
+		return []os.FileInfo{}
+	}
+	return files
+}
+
 func (db *DiskBackend) genAccessCode() string {
 	u, _ := uuid.NewV4()
-	id := strings.ReplaceAll(u.String(), "-", "")
+	id := strings.Replace(u.String(), "-", "", -1)
 
 	if db.profileExists(id) {
 		return db.genAccessCode() // Try again
@@ -70,13 +80,13 @@ func (db *DiskBackend) genAccessCode() string {
 	return id
 }
 
-func (db *DiskBackend) CreateProfile(name string) (profile proto.ProfilePacket, err error) {
+func (db *DiskBackend) CreateProfile(name string, country int, avatar int, modifiers int, noteskinspeed int) (profile proto.ProfilePacket, err error) {
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
 
 	accessCode := db.genAccessCode()
 
-	err = profile.FromBinary(proto.MakeProfilePacket(name, accessCode).ToBinary())
+	err = profile.FromBinary(proto.MakeProfilePacket(name, country, avatar, modifiers, noteskinspeed, accessCode).ToBinary())
 
 	if err != nil {
 		return
@@ -94,9 +104,81 @@ func (db *DiskBackend) saveProfile(profile proto.ProfilePacket) error {
 	return ioutil.WriteFile(db.getProfilePath(accessCode), profile.ToBinary(), 0770)
 }
 
+func (db *DiskBackend) saveWorldBest(wb *proto.WorldBestPacket) error {
+	return ioutil.WriteFile("worldbest.bin", wb.ToBinary(), 0770)
+}
+
+func (db *DiskBackend) saveRankMode(rm *proto.RankModePacket) error {
+	return ioutil.WriteFile("profile.bin", rm.ToBinary(), 0770)
+}
+
 func (db *DiskBackend) SaveProfile(profile proto.ProfilePacket) error {
 	db.mtx.Lock()
 	defer db.mtx.Unlock()
 
 	return db.saveProfile(profile)
+}
+
+func (db *DiskBackend) SaveWorldBest(wb *proto.WorldBestPacket) error {
+	db.mtx.Lock()
+	defer db.mtx.Unlock()
+
+	return db.saveWorldBest(wb)
+}
+
+func (db *DiskBackend) SaveRankMode(rm *proto.RankModePacket) error {
+	db.mtx.Lock()
+	defer db.mtx.Unlock()
+
+	return db.saveRankMode(rm)
+}
+
+func (db *DiskBackend) GetWorldBest() (wb *proto.WorldBestPacket, err error) {
+	db.mtx.RLock()
+	defer db.mtx.RUnlock()
+
+	if !tools.IsFile("worldbest.bin") {
+		err = fmt.Errorf("World Best Packet does not exist.")
+		wb = proto.MakeWorldBestPacket(nil)
+		return
+	}
+
+	var data []byte
+
+	data, err = ioutil.ReadFile("worldbest.bin")
+
+	if err != nil {
+		return
+	}
+
+	err = wb.FromBinary(data)
+
+	return
+}
+
+func (db *DiskBackend) GetRankMode() (rm *proto.RankModePacket, err error) {
+	db.mtx.RLock()
+	defer db.mtx.RUnlock()
+
+	if !tools.IsFile("rankmode.bin") {
+		err = fmt.Errorf("Rank Mode Packet does not exist.")
+		rm = proto.MakeRankModePacket(nil)
+		return
+	}
+
+	var data []byte
+
+	data, err = ioutil.ReadFile("rankmode.bin")
+
+	if err != nil {
+		return
+	}
+
+	err = rm.FromBinary(data)
+
+	return
+}
+
+func (db *DiskBackend) GetFolder() string {
+	return db.folder
 }

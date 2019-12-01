@@ -66,6 +66,16 @@ func MakeWorldBestPacket(scores []WorldBestScore) *WorldBestPacket {
 	for i, v := range scores {
 		if i < 4095 {
 			s[i] = v
+		} else {
+			s[i] = WorldBestScore{
+				SongID:     uint32(0),
+				ChartLevel: uint16(0),
+				ChartMode:  uint16(0),
+				Score:      uint32(0),
+				Unk0:       uint32(0),
+				Unk1:       uint32(0),
+				Nickname:   MakePIUNickName(""),
+			}
 		}
 	}
 
@@ -102,23 +112,45 @@ func MakeRankModePacket(ranks []SongRank) *RankModePacket {
 	}
 }
 
-func MakeProfilePacket(name, accessCode string) *ProfilePacket {
+func MakeProfilePacketDefault(name string, accessCode string) *ProfilePacket {
 	return &ProfilePacket{
-		PacketHead:  0x0000001,
-		PacketType:  PacketProfile,
-		AccessCode:  MakePIUString32(accessCode),
-		Nickname:    MakePIUNickName(name),
-		CountryID:   0,
-		Avatar:      0,
-		Level:       0,
-		EXP:         0,
-		PP:          0,
-		RankSingle:  0,
-		RankDouble:  0,
-		PlayCount:   0,
-		Kcal:        0,
-		Modifiers:   0,
-		RunningStep: 0,
+		PacketHead:    0x0000001,
+		PacketType:    PacketProfile,
+		AccessCode:    MakePIUString32(accessCode),
+		Nickname:      MakePIUNickName(name),
+		CountryID:     uint8(196),
+		Avatar:        uint8(41),
+		Level:         0,
+		EXP:           0,
+		PP:            0,
+		RankSingle:    0,
+		RankDouble:    0,
+		PlayCount:     0,
+		Kcal:          0,
+		Modifiers:     0,
+		NoteSkinSpeed: 0,
+		RunningStep:   0,
+	}
+}
+
+func MakeProfilePacket(name string, country int, avatar int, modifiers int, noteskinspeed int, accessCode string) *ProfilePacket {
+	return &ProfilePacket{
+		PacketHead:    0x0000001,
+		PacketType:    PacketProfile,
+		AccessCode:    MakePIUString32(accessCode),
+		Nickname:      MakePIUNickName(name),
+		CountryID:     uint8(country),
+		Avatar:        uint8(avatar),
+		Level:         0,
+		EXP:           0,
+		PP:            0,
+		RankSingle:    0,
+		RankDouble:    0,
+		PlayCount:     0,
+		Kcal:          0,
+		Modifiers:     uint64(modifiers),
+		NoteSkinSpeed: uint32(noteskinspeed),
+		RunningStep:   0,
 	}
 }
 

@@ -2,29 +2,69 @@ package main
 
 import (
 	"encoding/binary"
+	"encoding/json"
+	"io"
+	"io/ioutil"
+	"net"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/HUEBRTeam/PrimeServer"
 	"github.com/HUEBRTeam/PrimeServer/ProfileManager"
 	"github.com/HUEBRTeam/PrimeServer/Storage"
+	"github.com/HUEBRTeam/PrimeServer/cmd/server/network"
 	"github.com/HUEBRTeam/PrimeServer/cmd/server/rest"
 	"github.com/HUEBRTeam/PrimeServer/proto"
+	"github.com/HUEBRTeam/PrimeServer/tools"
 	"github.com/quan-to/slog"
-	"io"
-	"net"
-	"os"
-	"time"
 )
 
 const (
-	ConnPort = "60010"
-	ConnType = "tcp"
+	ConnPort   = "60010"
+	ConnType   = "tcp"
+	ConfigFile = "config.json"
+	ProfileDir = "profiles/"
 )
 
 var log = slog.Scope("PrimeServer")
 var profileManager *ProfileManager.ProfileManager
+var config = Config{}
 
 func main() {
 	sb := Storage.MakeDiskBackend("profiles")
 	profileManager = ProfileManager.MakeProfileManager(sb)
+	if !tools.IsFile(ConfigFile) {
+		log.Info("Config file not found, creating one...")
+		j, err := json.Marshal(Config{})
+		if err != nil {
+			log.Error("Error: cannot read config struct, %s", err.Error()) // this shouldn't happen
+			os.Exit(1)
+		}
+		err = ioutil.WriteFile(ConfigFile, []byte(j), 0644)
+		if err != nil {
+			log.Error("Error: cannot write config file, %s", err.Error())
+			os.Exit(1)
+		}
+	}
+	conf, err := ioutil.ReadFile(ConfigFile)
+	if err != nil {
+		log.Error("Error: cannot read config file, %s", err.Error())
+		os.Exit(1)
+	}
+	_ = json.Unmarshal(conf, &config)
+	if config.Online {
+		if tools.IsDir(sb.GetFolder()) {
+			for _, f := range sb.ListProfiles() {
+				prof, err := network.RetrieveProfile(config.APIKey, strings.Replace(f.Name(), ".primeprofile", "", -1), config.ServerAddress, profileManager)
+				if err != nil {
+					log.Error("Error: could not retrieve profile for access code %s, skipping... %s", strings.Replace(f.Name(), ".primeprofile", "", -1), err.Error())
+					break
+				}
+				sb.SaveProfile(prof)
+			}
+		}
+	}
 	rs := rest.MakeRestServer(8090, profileManager)
 
 	go func() {

@@ -3,6 +3,7 @@ package proto
 import (
 	"bytes"
 	"encoding/json"
+	//"fmt"
 )
 
 type GenericPacket interface {
@@ -65,10 +66,14 @@ func (n PIUString12) MarshalJSON() ([]byte, error) {
 }
 
 func (n PIUString12) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, &n); err != nil {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-
+	//fmt.Printf("String: %v\n", s)
+	a := makePIUString(s, 12)
+	copy(n[:], a)
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 
@@ -77,10 +82,14 @@ func (n PIUNickname) MarshalJSON() ([]byte, error) {
 }
 
 func (n PIUNickname) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, &n); err != nil {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-
+	//fmt.Printf("String: %v\n", s)
+	a := makePIUString(s, 12)
+	copy(n[:], a)
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 
@@ -89,10 +98,14 @@ func (n PIUString16) MarshalJSON() ([]byte, error) {
 }
 
 func (n PIUString16) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, &n); err != nil {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-
+	//fmt.Printf("String: %v\n", s)
+	a := makePIUString(s, 16)
+	copy(n[:], a)
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 
@@ -101,10 +114,14 @@ func (n PIUMacAddress) MarshalJSON() ([]byte, error) {
 }
 
 func (n PIUMacAddress) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, &n); err != nil {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-
+	//fmt.Printf("String: %v\n", s)
+	a := makePIUString(s, 20)
+	copy(n[:], a)
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 
@@ -113,10 +130,14 @@ func (n PIUString32) MarshalJSON() ([]byte, error) {
 }
 
 func (n PIUString32) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, &n); err != nil {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-
+	//fmt.Printf("String: %v\n", s)
+	a := makePIUString(s, 32)
+	copy(n[:], a)
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 
@@ -125,10 +146,14 @@ func (n PIUString128) MarshalJSON() ([]byte, error) {
 }
 
 func (n PIUString128) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, &n); err != nil {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-
+	//fmt.Printf("String: %v\n", s)
+	a := makePIUString(s, 128)
+	copy(n[:], a)
+	//fmt.Printf("PIUString: %v\n", n.String())
 	return nil
 }
 

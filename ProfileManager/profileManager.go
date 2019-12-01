@@ -2,10 +2,11 @@ package ProfileManager
 
 import (
 	"fmt"
-	"github.com/HUEBRTeam/PrimeServer/proto"
-	"github.com/quan-to/slog"
 	"sync"
 	"time"
+
+	"github.com/HUEBRTeam/PrimeServer/proto"
+	"github.com/quan-to/slog"
 )
 
 var log = slog.Scope("ProfileManager")
@@ -28,14 +29,39 @@ func MakeProfileManager(sb ProfileStorageBackend) *ProfileManager {
 	}
 }
 
-func (pm *ProfileManager) Create(name string) (string, error) {
-	p, err := pm.sb.CreateProfile(name)
+func (pm *ProfileManager) Create(name string, country int, avatar int, modifiers int, noteskinspeed int) (string, error) {
+	p, err := pm.sb.CreateProfile(name, country, avatar, modifiers, noteskinspeed)
 
 	if err != nil {
 		return "", err
 	}
 
 	return p.AccessCode.String(), nil
+}
+
+func (pm *ProfileManager) Change(accessCode string, name string, country int, avatar int, modifiers int, noteskinspeed int) error {
+	pm.mtx.Lock()
+	defer pm.mtx.Unlock()
+
+	profile, err := pm.sb.GetProfile(accessCode)
+	if err != nil {
+		log.Error("Error getting %s profile: %s", profile.Nickname, err)
+		return err
+	}
+
+	profile.Nickname = proto.MakePIUNickName(name)
+	profile.CountryID = uint8(country)
+	profile.Avatar = uint8(avatar)
+	profile.Modifiers = uint64(modifiers)
+	profile.NoteSkinSpeed = uint32(noteskinspeed)
+
+	err = pm.sb.SaveProfile(profile)
+	if err != nil {
+		log.Error("Error saving %s profile: %s", profile.Nickname, err)
+		return err
+	}
+
+	return nil
 }
 
 func (pm *ProfileManager) Load(accessCode string, playerId uint32) (profile proto.ProfilePacket, err error) {
@@ -151,6 +177,8 @@ func (pm *ProfileManager) Unload(profileId uint32) {
 	if err != nil {
 		log.Error("Error saving %s profile: %s", v.Profile.Nickname, err)
 	}
+
+	log.Debug("Saved profile %s", v.Profile.Nickname)
 }
 
 func (pm *ProfileManager) PutScoreBoard(sb proto.ScoreBoardPacket) {
@@ -205,4 +233,12 @@ func (pm *ProfileManager) PutScoreBoard2(sb proto.ScoreBoardPacket2) {
 			log.Error("Error saving %s profile: %s", p.Nickname, err)
 		}
 	}
+}
+
+func (pm *ProfileManager) GetStorageBackend() ProfileStorageBackend {
+	return pm.sb
+}
+
+func (pm *ProfileManager) ProfileIDToAccessCode(id uint32) string {
+	return pm.profileIdToAccessCode[id]
 }
