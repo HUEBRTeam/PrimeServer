@@ -65,7 +65,7 @@ func (n PIUString12) MarshalJSON() ([]byte, error) {
 	return json.Marshal(n.String())
 }
 
-func (n PIUString12) UnmarshalJSON(data []byte) error {
+func (n *PIUString12) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
@@ -81,7 +81,7 @@ func (n PIUNickname) MarshalJSON() ([]byte, error) {
 	return json.Marshal(n.String())
 }
 
-func (n PIUNickname) UnmarshalJSON(data []byte) error {
+func (n *PIUNickname) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
@@ -97,7 +97,7 @@ func (n PIUString16) MarshalJSON() ([]byte, error) {
 	return json.Marshal(n.String())
 }
 
-func (n PIUString16) UnmarshalJSON(data []byte) error {
+func (n *PIUString16) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
@@ -113,7 +113,7 @@ func (n PIUMacAddress) MarshalJSON() ([]byte, error) {
 	return json.Marshal(n.String())
 }
 
-func (n PIUMacAddress) UnmarshalJSON(data []byte) error {
+func (n *PIUMacAddress) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
@@ -129,7 +129,7 @@ func (n PIUString32) MarshalJSON() ([]byte, error) {
 	return json.Marshal(n.String())
 }
 
-func (n PIUString32) UnmarshalJSON(data []byte) error {
+func (n *PIUString32) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
@@ -145,7 +145,7 @@ func (n PIUString128) MarshalJSON() ([]byte, error) {
 	return json.Marshal(n.String())
 }
 
-func (n PIUString128) UnmarshalJSON(data []byte) error {
+func (n *PIUString128) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
@@ -206,6 +206,63 @@ func (n PIUString128) String() string {
 		s = 128
 	}
 	return string(n[:s])
+}
+
+// endregion
+
+// region Form Encoded Marshal / Unmarshal
+func (n PIUString12) MarshalText() ([]byte, error) {
+	return []byte(n.String()), nil
+}
+
+func (n *PIUString12) UnmarshalText(text []byte) error {
+	a := makePIUString(string(text), 12)
+	copy(n[:], a)
+
+	return nil
+}
+
+func (n PIUNickname) MarshalText() ([]byte, error) {
+	return []byte(n.String()), nil
+}
+
+func (n *PIUNickname) UnmarshalText(text []byte) error {
+	a := makePIUString(string(text), 12)
+	copy(n[:], a)
+
+	return nil
+}
+func (n PIUString16) MarshalText() ([]byte, error) {
+	return []byte(n.String()), nil
+}
+
+func (n *PIUString16) UnmarshalText(text []byte) error {
+	a := makePIUString(string(text), 16)
+	copy(n[:], a)
+
+	return nil
+}
+
+func (n PIUString32) MarshalText() ([]byte, error) {
+	return []byte(n.String()), nil
+}
+
+func (n *PIUString32) UnmarshalText(text []byte) error {
+	a := makePIUString(string(text), 32)
+	copy(n[:], a)
+
+	return nil
+}
+
+func (n PIUString128) MarshalText() ([]byte, error) {
+	return []byte(n.String()), nil
+}
+
+func (n *PIUString128) UnmarshalText(text []byte) error {
+	a := makePIUString(string(text), 128)
+	copy(n[:], a)
+
+	return nil
 }
 
 // endregion

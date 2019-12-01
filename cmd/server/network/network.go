@@ -4,136 +4,165 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"github.com/HUEBRTeam/PrimeServer/ProfileManager"
+	"github.com/HUEBRTeam/PrimeServer/proto"
+	"github.com/ajg/form"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"path"
-	"reflect"
-
-	"github.com/HUEBRTeam/PrimeServer/ProfileManager"
-	"github.com/HUEBRTeam/PrimeServer/proto"
 )
 
-func RetrieveProfile(apikey string, accesscode string, address string, pm *ProfileManager.ProfileManager) (profpacket proto.ProfilePacket, err error) {
+func RetrieveProfile(apikey string, accesscode string, address string, pm *ProfileManager.ProfileManager) (proto.ProfilePacket, error) {
 	u, err := url.Parse(address)
 	if err != nil {
-		return
+		return proto.ProfilePacket{}, err
 	}
+
 	u.Path = path.Join(u.Path, "getprofile")
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return
+		return proto.ProfilePacket{}, err
 	}
+
 	query := req.URL.Query()
 	query.Add("api_key", apikey)
 	query.Add("access_code", accesscode)
 	req.URL.RawQuery = query.Encode()
+
 	resp, err := http.Get(req.URL.String())
 	if err != nil {
-		return
+		return proto.ProfilePacket{}, err
 	}
 	defer resp.Body.Close()
+
 	body, err := ioutil.ReadAll(resp.Body)
-	profpacket, err = pm.GetStorageBackend().GetProfile(accesscode)
+	if err != nil {
+		return proto.ProfilePacket{}, err
+	}
+
+	profpacket, err := pm.GetStorageBackend().GetProfile(accesscode)
 	if err != nil {
 		profpacket = *proto.MakeProfilePacketDefault("", accesscode)
 		err = nil
 	}
+
 	err = json.Unmarshal(body, &profpacket) // may have to switch profpacket.AccessCode
-	return
+	return profpacket, err
 }
 
-func RetrieveWorldBest(apikey string, address string, scoretype string) (wbpacket *proto.WorldBestPacket, err error) {
+func RetrieveWorldBest(apikey string, address string, scoretype string) (*proto.WorldBestPacket, error) {
 	u, err := url.Parse(address)
 	if err != nil {
-		return
+		return nil, err
 	}
+
 	u.Path = path.Join(u.Path, "getworldbest")
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return
+		return nil, err
 	}
+
 	query := req.URL.Query()
 	query.Add("api_key", apikey)
 	query.Add("scoretype", scoretype)
 	req.URL.RawQuery = query.Encode()
+
 	resp, err := http.Get(req.URL.String())
 	if err != nil {
-		return
+		return nil, err
 	}
 	defer resp.Body.Close()
+
 	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 	//fmt.Println(string(body))
-	wbpacket = proto.MakeWorldBestPacket([]proto.WorldBestScore{})
+	wbpacket := proto.MakeWorldBestPacket([]proto.WorldBestScore{})
 	err = json.Unmarshal(body, &wbpacket)
-	return
+	return wbpacket, err
 }
 
-func RetrieveRankMode(apikey string, address string, scoretype string) (rnkpacket *proto.RankModePacket, err error) {
+func RetrieveRankMode(apikey string, address string, scoretype string) (*proto.RankModePacket, error) {
 	u, err := url.Parse(address)
 	if err != nil {
-		return
+		return nil, err
 	}
 	u.Path = path.Join(u.Path, "getrankmode")
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return
+		return nil, err
 	}
+
 	query := req.URL.Query()
 	query.Add("api_key", apikey)
 	query.Add("scoretype", scoretype)
 	req.URL.RawQuery = query.Encode()
+
 	resp, err := http.Get(req.URL.String())
 	if err != nil {
-		return
+		return nil, err
 	}
 	defer resp.Body.Close()
+
 	body, err := ioutil.ReadAll(resp.Body)
-	rnkpacket = proto.MakeRankModePacket([]proto.SongRank{})
+	if err != nil {
+		return nil, err
+	}
+
+	rnkpacket := proto.MakeRankModePacket([]proto.SongRank{})
 	err = json.Unmarshal(body, &rnkpacket)
-	return
+
+	return rnkpacket, err
 }
 
-func SubmitScore(apikey string, address string, score proto.ScoreBoardPacket2, accesscode string) (err error) {
+func SubmitScore(apikey string, address string, score proto.ScoreBoardPacket2, accesscode string) error {
 	u, err := url.Parse(address)
 	if err != nil {
-		return
+		return err
 	}
 	u.Path = path.Join(u.Path, "submit")
-	values := url.Values{}
-	val := reflect.ValueOf(&score).Elem()
-	t := val.Type()
-	for i := 0; i < val.NumField(); i++ { // iterate through struct fields and convert everything to strings
-		values.Set(t.Field(i).Name, fmt.Sprint(val.Field(i)))
+	values, err := form.EncodeToValues(score)
+	if err != nil {
+		return err
 	}
 	// for any extras just do values.Set(key, value)
 	values.Set("api_key", apikey)
 	values.Set("AccessCode", accesscode)
+
 	resp, err := http.PostForm(u.String(), values)
 	//fmt.Println("Score values: %+v", values)
 	if err != nil {
-		return
+		return err
 	}
+
 	fmt.Println("Score response:")
 	body, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		return err
+	}
+
 	fmt.Println(string(body))
-	defer resp.Body.Close()
-	return
+	resp.Body.Close()
+
+	return nil
 }
 
-func SubmitProfile(apikey string, address string, profile proto.ProfilePacket, accesscode string) (err error) {
+func SubmitProfile(apikey string, address string, profile proto.ProfilePacket, accesscode string) error {
 	u, err := url.Parse(address)
 	if err != nil {
-		return
+		return err
 	}
 	u.Path = path.Join(u.Path, "saveprofile")
-	values := url.Values{}
-	val := reflect.ValueOf(&profile).Elem()
-	t := val.Type()
-	for i := 0; i < val.NumField(); i++ {
-		values.Set(t.Field(i).Name, fmt.Sprint(val.Field(i)))
+	values, err := form.EncodeToValues(profile)
+
+	if err != nil {
+		return err
 	}
+
 	// for any extras just do values.Set(key, value)
 	values.Set("api_key", apikey)
 	values.Set("AccessCode", accesscode)
@@ -141,7 +170,7 @@ func SubmitProfile(apikey string, address string, profile proto.ProfilePacket, a
 	// remove this after debugging
 	f, err := os.Create("submittedprofile.log")
 	if err != nil {
-		return
+		return err
 	}
 	defer f.Close()
 	w := bufio.NewWriter(f)
@@ -150,36 +179,37 @@ func SubmitProfile(apikey string, address string, profile proto.ProfilePacket, a
 
 	resp, err := http.PostForm(u.String(), values)
 	if err != nil {
-		return
+		return err
 	}
 	fmt.Println("Profile response:")
 	body, err := ioutil.ReadAll(resp.Body)
 	fmt.Println(string(body))
-	defer resp.Body.Close()
-	return
+	resp.Body.Close()
+	return nil
 }
 
-func SubmitMachineInfo(apikey string, address string, profile proto.MachineInfoPacket) (err error) {
+func SubmitMachineInfo(apikey string, address string, profile proto.MachineInfoPacket) error {
 	u, err := url.Parse(address)
 	if err != nil {
-		return
+		return err
 	}
 	u.Path = path.Join(u.Path, "submitmachineinfo")
-	values := url.Values{}
-	val := reflect.ValueOf(&profile).Elem()
-	t := val.Type()
-	for i := 0; i < val.NumField(); i++ {
-		values.Set(t.Field(i).Name, fmt.Sprint(val.Field(i)))
+	values, err := form.EncodeToValues(profile)
+
+	if err != nil {
+		return err
 	}
+
 	// for any extras just do values.Set(key, value)
 	values.Set("api_key", apikey)
 	resp, err := http.PostForm(u.String(), values)
 	if err != nil {
-		return
+		return err
 	}
 	//fmt.Println("Machine Info response:")
 	//body, err := ioutil.ReadAll(resp.Body)
 	//fmt.Println(string(body))
-	defer resp.Body.Close()
-	return
+	resp.Body.Close()
+
+	return nil
 }
