@@ -95,6 +95,7 @@ func handleRequestWorldBestPacket(l *slog.Instance, conn net.Conn, v proto.Reque
 	wb, err := network.RetrieveWorldBest(config.APIKey, config.ServerAddress, config.ScoreType)
 	if err != nil {
 		log.Error("Error: could not retrieve World Best packet %s", err.Error())
+		wb = proto.MakeWorldBestPacket(nil)
 	}
 	PrimeServer.SendPacket(conn, wb.ToBinary())
 }
@@ -103,6 +104,7 @@ func handleRequestRankModePacket(l *slog.Instance, conn net.Conn, v proto.Reques
 	rm, err := profileManager.GetStorageBackend().GetRankMode()
 	if err != nil {
 		log.Error("Error: could not get Rank Mode packet %s", err.Error())
+		rm = proto.MakeRankModePacket(nil)
 	}
 	PrimeServer.SendPacket(conn, rm.ToBinary())
 }

@@ -138,7 +138,7 @@ func (db *DiskBackend) GetWorldBest() (wb *proto.WorldBestPacket, err error) {
 	defer db.mtx.RUnlock()
 
 	if !tools.IsFile("worldbest.bin") {
-		err = fmt.Errorf("World Best Packet does not exist.")
+		err = fmt.Errorf("world Best Packet does not exist")
 		wb = proto.MakeWorldBestPacket(nil)
 		return
 	}
