@@ -201,6 +201,7 @@ func (pm *ProfileManager) PutScoreBoard(sb proto.ScoreBoardPacket) {
 		p.Kcal += sb.Kcal
 
 		v.Profile = p
+		pm.loadedProfiles[accessCode] = v
 		err := pm.sb.SaveProfile(p)
 		if err != nil {
 			log.Error("Error saving %s profile: %s", p.Nickname, err)
@@ -226,8 +227,33 @@ func (pm *ProfileManager) PutScoreBoard2(sb proto.ScoreBoardPacket2) {
 		p.PP += uint64(sb.PP)
 		p.RunningStep += uint64(sb.RunningStep)
 		p.Kcal += sb.Kcal
+		p.Modifiers = uint64(sb.Modifiers)
+		p.NoteSkinSpeed = sb.NoteSkinSpeed
+		p.RushSpeed = sb.RushSpeed
+		for i := 0; i < len(p.Scores); i++ {
+			score := &p.Scores[i]
+			if score.SongID != 0 {
+				if score.SongID != sb.SongID {
+					continue
+				}
+				if score.ChartLevel != uint8(sb.ChartLevel) {
+					continue
+				}
+			}
+			if score.Score <= sb.Score {
+				score.SongID = sb.SongID
+				score.ChartLevel = uint8(sb.ChartLevel)
+				score.Unk0 = 0
+				score.GameDataFlag = 0
+				score.Score = sb.Score
+				score.RealScore = sb.Score
+				score.Unk2 = 1
+			}
+			break
+		}
 
 		v.Profile = p
+		pm.loadedProfiles[accessCode] = v
 		err := pm.sb.SaveProfile(p)
 		if err != nil {
 			log.Error("Error saving %s profile: %s", p.Nickname, err)
